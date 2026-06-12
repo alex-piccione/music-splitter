@@ -1,0 +1,5 @@
+main description: |>
+  This program split MP3 files in multiple tracks. 
+  It doesn't leave empty spaces between the tracks.  
+  The division is guided by a tracklist file, that has to have the same name of the .mp3 file and belong in the same folder.
+  The tracklist file has to have the following format:
