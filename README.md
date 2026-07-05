@@ -1,6 +1,6 @@
 # Music Splitter
 
-When I find a nice compilation on YouTube and I download it, it is a single long mp3 file within separation between the songs.  
+When I find a nice compilation on YouTube and I download it, it is a single long mp3 file without separation between the songs.  
 The single original file must be splitted in parts of fixed duration.  
 The resulting mp3 files must have the Artist, Album and song Title set in the mp3 metadata,
 so that the automobile mp3 player system can recognize it and act accordingly (put it together and play it in the right order).
