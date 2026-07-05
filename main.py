@@ -3,43 +3,59 @@ import tkinter as tk
 from tkinter import filedialog
 from ui import create_main_window, alert
 
-mp3splt_path = "./libs/mp3splt_2.6.2_i386/mp3splt.exe"
-last_selected_file = ""  # variable to store the last selected file
-initial_path = "A:/"
-
-
-def select_file(extension):
-    if not extension: return alert("Please, provide an extension.", "Select a file")
-    
-    global last_selected_file
+class MusicSplitterApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.mp3splt_path = "./libs/mp3splt_2.6.2_i386/mp3splt.exe"
+        self.last_selected_file = ""
         
-    # Use the directory of the last selected file as the initial directory
-    initial_dir = os.path.dirname(last_selected_file) if last_selected_file else "."
-    file_types = [("MP3", ".mp3")] if extension == "mp3" else None
-    filename = filedialog.askopenfilename(title=f"Select a {extension} file", initialdir=initial_dir, filetypes=file_types)    
+        # Initialize UI and get callback functions
+        self.update_file_label, self.log_message = create_main_window(
+            self.root, 
+            self.on_split_button_click, 
+            self.close_app
+        )
 
-    # Update the last selected file variable
-    if filename:
-        last_selected_file = filename
-    
-    # returns the full file path
-    return filename
+    def select_file(self, extension):
+        if not extension:
+            alert("Please, provide an extension.", "Select a file")
+            self.log_message("Error: No extension provided.")
+            return None
+        
+        initial_dir = os.path.dirname(self.last_selected_file) if self.last_selected_file else "."
+        file_types = [("MP3", ".mp3")] if extension == "mp3" else None
+        
+        filename = filedialog.askopenfilename(
+            title=f"Select a {extension} file", 
+            initialdir=initial_dir, 
+            filetypes=file_types
+        )    
 
-def split_file():
-    mp3_file = select_file("mp3")
-    if not mp3_file: return
+        if filename:
+            self.last_selected_file = filename
+            self.update_file_label(filename)
+            self.log_message(f"File selected: {os.path.basename(filename)}")
+        else:
+            self.log_message("File selection cancelled.")
+        
+        return filename
 
-    alert("mp3 selected")
+    def on_split_button_click(self):
+        mp3_file = self.select_file("mp3")
+        if not mp3_file:
+            return
 
-    #os.system(f"{mp3splt_path} {mp3_file}")
+        self.log_message(f"Starting split process for: {os.path.basename(mp3_file)}")
+        alert(f"Processing: {os.path.basename(mp3_file)}", "Process Started")
+        
+        # TODO: Implement actual splitting logic using self.mp3splt_path
 
+    def close_app(self):
+        self.root.destroy()
 
-def close_app():
-    root.destroy()
+    def run(self):
+        self.root.mainloop()
 
-root = tk.Tk()
-create_main_window(root, split_file, close_app)
-root.mainloop()
-
-
-root.mainloop()
+if __name__ == "__main__":
+    app = MusicSplitterApp()
+    app.run()
