@@ -5,3 +5,4 @@
 - [ ] Implement UI elements.
 - [ ] Test line added.
 - [ ] Verify CI/CD workflow
+- [ ] Finalize project setup
