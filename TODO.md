@@ -1,4 +1,4 @@
-# DOING
+# COMPLETED
 
 - [x] Implement UI elements:
     - [x] Modernize Look & Feel using `tkinter.ttk`.
