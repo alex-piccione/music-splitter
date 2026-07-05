@@ -31,7 +31,7 @@ def create_main_window(root, split_file, close_app):
     
     # Create the main window and set its properties
     root.title("Music Splitter")
-    root.geometry("600x400")
+    root.geometry("600x450")
 
     # Main container frame
     main_frame = ttk.Frame(root, padding="20")
@@ -72,10 +72,10 @@ def create_main_window(root, split_file, close_app):
 
     # Bottom area (Close button)
     bottom_frame = ttk.Frame(main_frame)
-    bottom_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(20, 0))
+    bottom_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(20, 5))
 
     close_button = ttk.Button(bottom_frame, text="Close", command=close_app)
-    close_button.pack(side=tk.RIGHT)
+    close_button.pack(side=tk.RIGHT, padx=5)
 
     # Helper functions to interact with the UI from outside
     def update_file_label(path):

@@ -6,6 +6,7 @@ from ui import create_main_window, alert
 class MusicSplitterApp:
     def __init__(self):
         self.root = tk.Tk()
+        # TODO: Read mp3splt_path and other configs from config.txt
         self.mp3splt_path = "./libs/mp3splt_2.6.2_i386/mp3splt.exe"
         self.last_selected_file = ""
         
