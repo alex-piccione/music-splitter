@@ -3,3 +3,4 @@
 - [ ] Initial setup of the project structure.
 - [ ] Add basic functionality.
 - [ ] Implement UI elements.
+- [ ] Test line added.
