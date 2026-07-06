@@ -29,8 +29,9 @@ class TestMP3Splitter(unittest.TestCase):
         
         self.assertEqual(len(parts), 3)
         for i in range(1, 4):
-            expected_name = f"{str(i).zfill(2)}.mp3"
-            self.assertTrue(any(os.path.basename(p) == expected_name for p in parts))
+            expected_filename = f"{str(i).zfill(2)}.mp3"
+            expected_path = os.path.join(self.output_dir, expected_filename)
+            self.assertTrue(os.path.exists(expected_path))
 
     def test_invalid_extension(self):
         """Ensure non-mp3 files trigger ValueError."""
@@ -48,8 +49,9 @@ class TestMP3Splitter(unittest.TestCase):
 
     def test_invalid_duration(self):
         """Ensure non-positive durations raise ValueError."""
+        bad_duration = 0
         with self.assertRaises(ValueError) as cm:
-            self.splitter.split(self.fixture_path, self.output_dir, 0)
+            self.splitter.split(self.fixture_path, self.output_dir, bad_duration)
         self.assertEqual(str(cm.exception), "Segment duration must be greater than zero.")
 
     def test_file_not_found(self):
