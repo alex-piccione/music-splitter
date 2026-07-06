@@ -2,14 +2,14 @@
 
 ## Backlog
 
-- Split MP3
-  Split large .mp3 file into smaller files. Given the .mp3 file, create a folder with the same name and add the part_NN.mp3 files created there.
-  File are split in equally long files, where the duration is fixed 5 minutes (will be configurable in th efuture)
-  Files are stored in a new folder called like the original file
-  Files are names 01.mp3, 02.mp3 etc...
+- Split MP3  
+  Split large .mp3 file into smaller files. Given the .mp3 file, create a folder with the same name and add the part_NN.mp3 files created there.  
+  File are split in equally long files, where the duration is fixed 5 minutes (will be configurable in th efuture)  
+  Files are stored in a new folder called like the original file  
+  Files are names 01.mp3, 02.mp3 etc...  
   MP3 metadata are copied from the original MP£, but adding the "part" information... if it is possible.
-  
 
+  Subrtasks:
   + Implement core MP3 splitting engine.
   + implement test of it
   + Implement automated directory organization for split parts (`part_NN.mp3`).
