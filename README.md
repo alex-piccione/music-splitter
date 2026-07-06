@@ -39,7 +39,13 @@ mp3_filename = "my-file.mp3"
 os.system(f"{mp3splt_path} {mp3_filename}")
 ```
 
-Where the fuck is the documentation?
+## Documentation & Project Management
+
+For information regarding the project status and development roadmap, please refer to:
+- [TODO.md](./TODO.md) - Current tasks and upcoming work.
+- [CHANGELOG.md](./CHANGELOG.md) - Historical record of completed features and changes.
+- [ROADMAP.md](./ROADMAP.md) - High-level project vision and future phases.
+
 
 
 
