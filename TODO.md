@@ -1,3 +1,11 @@
+# COMPLETED
+
+- [x] Implement UI elements:
+    - [x] Modernize Look & Feel using `tkinter.ttk`.
+    - [x] Improve Layout (Header, Selected File Display, Status/Log Area).
+    - [x] Integrate File Selection visibility and Split trigger.
+    - [x] Enhance Error Handling/Feedback.
+
 # TODO
 
 ## Backlog
