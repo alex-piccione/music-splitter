@@ -49,7 +49,29 @@ Run the application using:
 python main.py
 ```
 
+## CUE file
+
+.cue file example:
+```
+PERFORMER "Various Artists"
+TITLE "Ambient Lounge  - Vol. 5 - CD 1"
+FILE "Ambient Lounge - Vol. 5 - CD 1.mp3" MP3
+  TRACK 01 AUDIO
+    TITLE "1 Giant Leap feat. Ro. Williams & Maxi Jazz - My Culture "
+    PERFORMER "1 Giant Leap feat. Ro. Williams & Maxi Jazz - My Culture "
+    INDEX 01 00:00:00
+  TRACK 02 AUDIO
+    TITLE "Groove Armada - Lovebox"
+    PERFORMER "Groove Armada - Lovebox"
+    INDEX 01 05:24:10
+  TRACK 03 AUDIO
+    TITLE "4 Hero - Hold it down"
+    PERFORMER "4 Hero - Hold it down"
+    INDEX 01 11:01:01
+```
+
 ## Project Management
+
 
 - [TODO.md](./TODO.md) - Current tasks and upcoming work.
 - [CHANGELOG.md](./CHANGELOG.md) - Historical record of completed features and changes.
