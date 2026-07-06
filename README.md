@@ -1,19 +1,22 @@
 # Music Splitter
 
+This is an utily to split large MP3 music files in smaller ones.  
+
 When I find a nice compilation on YouTube and I download it, it is a single long mp3 file without separation between the songs.  
 The single original file must be splitted in parts of fixed duration.  
 The resulting mp3 files must have the Artist, Album and song Title set in the mp3 metadata,
-so that the automobile mp3 player system can recognize it and act accordingly (put it together and play it in the right order).
-
+so that the car MP3 player system can recognize it and act accordingly (put it together and play it in the right order).
+  
 Other times I have a FLAC file I need to convert to mp3.  
 In some cases I have the .mp3u file that contains the right parts of the full file, sometimes not.  
 
 
-
 ## Setup
-This program uses the _mp3splt_ library.  
-It has to be downloaded and unzipped into the /libs folder.
-The current version is 2.6.2; I downloaded and unzipped the Windows version.   
+This program uses the [mp3splt](https://mp3splt.sourceforge.net/mp3splt_page/home.php) library.  
+[TODO] Can I distribute it wit h the software?  
+[TODO] Can it be auto-configured (download + unzip + setup)?  
+It has to be downloaded and unzipped into the **/libs** folder.
+The current version is 2.6.2; I downloaded and unzipped the Windows version.  
 I have now _/libs/mp3splt_2.6.2_i386_ folder, and it contains the _mp3splt.exe_ file.  
 Correct the _main.py_ file with the right folder name matching your downloaded version.  
 
@@ -23,21 +26,6 @@ Using this websites I can extract the mp3:
 - https://sern.info/youtu.be
 
 
-## Split FLAC files
-
-This **mp3splt library** can be used to split the file: https://mp3splt.sourceforge.net/mp3splt_page/home.php
-> split by a fixed time length
-
-I put the Windows .exe in the _libs/mp3splt_2.6.2_i386_ folder.
-
-```python
-import os
-
-mp3splt_path = "./libs/mp3splt_2.6.2_i386/mp3splt.exe"
-mp3_filename = "my-file.mp3"
-
-os.system(f"{mp3splt_path} {mp3_filename}")
-```
 
 Where the fuck is the documentation?
 
