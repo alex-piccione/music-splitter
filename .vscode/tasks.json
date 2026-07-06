@@ -2,13 +2,26 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Music-Splitter",
+      "label": "🚀 Run Music-Splitter",
       "type": "shell",
       "command": "python",
       "args": ["${workspaceFolder}/main.py"],
       "group": {
         "kind": "build",
         "isDefault": true
+      }
+    },
+    {
+      "label": "🧪 Run Tests",
+      "type": "shell",
+      "command": "python3 -m unittest discover tests",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
       }
     }
   ]
