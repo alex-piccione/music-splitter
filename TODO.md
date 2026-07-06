@@ -21,7 +21,7 @@
   Add a config.txt file. 
   It has to contain the fields: MP3SPLIT_BINS_FOLDER and SPLIT_FIXED_DURATION_MINUTES.
 
-## DONE
+## Done
 
 - Implement UI elements:
   + Modernize Look & Feel using `tkinter.ttk`.

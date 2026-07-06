@@ -28,10 +28,9 @@ class TestMP3Splitter(unittest.TestCase):
         parts = self.splitter.split(self.fixture_path, self.output_dir, 4/60)
         
         self.assertEqual(len(parts), 3)
-        for i in range(1, 4):
-            expected_filename = f"{str(i).zfill(2)}.mp3"
-            expected_path = os.path.join(self.output_dir, expected_filename)
-            self.assertTrue(os.path.exists(expected_path))
+        self.assertTrue(os.path.exists(os.path.join(self.output_dir, "01.mp3")))
+        self.assertTrue(os.path.exists(os.path.join(self.output_dir, "02.mp3")))
+        self.assertTrue(os.path.exists(os.path.join(self.output_dir, "03.mp3")))
 
     def test_invalid_extension(self):
         """Ensure non-mp3 files trigger ValueError."""
