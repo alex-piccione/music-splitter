@@ -1,41 +1,53 @@
 # Music Splitter
 
-This is an utily to split large MP3 music files in smaller ones.  
+A utility tool designed to split large MP3 audio files into smaller segments based on a specified duration while preserving ID3 metadata (Artist, Album, Title). It ensures that the resulting files are ready for playback on various media players.
 
-When I find a nice compilation on YouTube and I download it, it is a single long mp3 file without separation between the songs.  
-The single original file must be splitted in parts of fixed duration.  
-The resulting mp3 files must have the Artist, Album and song Title set in the mp3 metadata,
-so that the car MP3 player system can recognize it and act accordingly (put it together and play it in the right order).
-  
-Other times I have a FLAC file I need to convert to mp3.  
-In some cases I have the .mp3u file that contains the right parts of the full file, sometimes not.  
+## Features
 
+- **Automated Splitting**: Segment long MP3 files into equal durations.
+- **Metadata Preservation**: Automatically copies ID3 tags (Artist, Album, Title) from the source file to all generated segments.
+- **User Interface**: A clean Tkinter-based GUI for easy interaction.
+- **Error Handling**: Robust validation for file types and segment durations.
 
-## Setup
-This program uses the [mp3splt](https://mp3splt.sourceforge.net/mp3splt_page/home.php) library.  
-[TODO] Can I distribute it wit h the software?  
-[TODO] Can it be auto-configured (download + unzip + setup)?  
-It has to be downloaded and unzipped into the **/libs** folder.
-The current version is 2.6.2; I downloaded and unzipped the Windows version.  
-I have now _/libs/mp3splt_2.6.2_i386_ folder, and it contains the _mp3splt.exe_ file.  
-Correct the _main.py_ file with the right folder name matching your downloaded version.  
+## Prerequisites
 
-## Extract mp3 from YouTube video
-Using this websites I can extract the mp3:
-- https://youtubemp3free.com/en
-- https://sern.info/youtu.be
+This application requires **FFmpeg** to process audio files via the `pydub` library.
 
+### Installation of FFmpeg
 
+#### Windows
+1. Download the latest build from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/).
+2. Extract the archive to a permanent location (e.g., `C:\ffmpeg`).
+3. Add the `bin` directory (e.g., `C:\ffmpeg\bin`) to your system's **PATH** environment variable.
+4. Verify installation by running `ffmpeg -version` in a terminal.
 
-## Documentation & Project Management
+#### macOS
+Using Homebrew:
+```bash
+brew install ffmpeg
+```
 
-For information regarding the project status and development roadmap, please refer to:
-- [TODO.md](./TODO.md) - Current tasks and upcoming work.
-- [CHANGELOG.md](./CHANGELOG.md) - Historical record of completed features and changes.
-- [ROADMAP.md](./ROADMAP.md) - High-level project vision and future phases.
+#### Linux
+Using your package manager (e.g., Ubuntu/Debian):
+```bash
+sudo apt update && sudo apt install ffmpeg
+```
 
+## Installation
 
+1. Ensure you have [Python 3.x](https://www.python.org/) installed.
+2. Clone this repository.
+3. Install the required Python libraries:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
+## Usage
+
+Run the application using:
+```bash
+python main.py
+```
 
 ## CUE file
 
@@ -57,3 +69,9 @@ FILE "Ambient Lounge - Vol. 5 - CD 1.mp3" MP3
     PERFORMER "4 Hero - Hold it down"
     INDEX 01 11:01:01
 ```
+
+## Project Management
+
+
+- [TODO.md](./TODO.md) - Current tasks and upcoming work.
+- [CHANGELOG.md](./CHANGELOG.md) - Historical record of completed features and changes.

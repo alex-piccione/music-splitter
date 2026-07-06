@@ -2,7 +2,13 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Music-Splitter",
+      "label": "🏗️ Setup Project",
+      "type": "shell",
+      "command": "pip install -r requirements.txt",
+      "problemMatcher": []
+    },
+    {
+      "label": "🚀 Run Music-Splitter",
       "type": "shell",
       "command": "python",
       "args": ["${workspaceFolder}/main.py"],
@@ -10,6 +16,24 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "🧪 Run Tests",
+      "type": "shell",
+      "command": "python -m unittest discover tests",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "options": {
+           "env": {
+             "PATH": "D:\\Standalone Programs\\FFMPEG\\bin;${env:PATH}"
+           }
+      },
     }
   ]
 }
