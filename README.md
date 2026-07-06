@@ -27,7 +27,13 @@ Using this websites I can extract the mp3:
 
 
 
-Where the fuck is the documentation?
+## Documentation & Project Management
+
+For information regarding the project status and development roadmap, please refer to:
+- [TODO.md](./TODO.md) - Current tasks and upcoming work.
+- [CHANGELOG.md](./CHANGELOG.md) - Historical record of completed features and changes.
+- [ROADMAP.md](./ROADMAP.md) - High-level project vision and future phases.
+
 
 
 

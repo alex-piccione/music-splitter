@@ -1,4 +1,8 @@
-# TODO
+## Doing
+
+## Backlog
+
+- Implement core MP3 splitting engine.
 
 - Split MP3
   Split large .mp3 file into smaller files. Given the .mp3 file, create a folder with the same name and add the part_NN.mp3 files created there.
@@ -7,12 +11,16 @@
   Files are names 01.mp3, 02.mp3 etc...
   MP3 metadata are copied from the original MP£, but adding the "part" information... if it is possible.
   
+
+  + Implement core MP3 splitting engine.
+  + implement test of it
+  + Implement automated directory organization for split parts (`part_NN.mp3`).
   
 - Config 
   Add a config.txt file. 
   It has to contain the fields: MP3SPLIT_BINS_FOLDER and SPLIT_FIXED_DURATION_MINUTES.
 
-# DONE
+## Done
 
 - Implement UI elements:
   + Modernize Look & Feel using `tkinter.ttk`.
