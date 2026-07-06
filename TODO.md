@@ -2,8 +2,6 @@
 
 ## Backlog
 
-- Implement core MP3 splitting engine.
-
 - Split MP3
   Split large .mp3 file into smaller files. Given the .mp3 file, create a folder with the same name and add the part_NN.mp3 files created there.
   File are split in equally long files, where the duration is fixed 5 minutes (will be configurable in th efuture)
