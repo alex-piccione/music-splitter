@@ -1,7 +1,7 @@
 # 🚀 In Progress
 - [ ] Implement core MP3 splitting engine.
 
-# 📥 Backlog
+# 📋 Backlog
 - [ ] Implement automated directory organization for split parts (`part_NN.mp3`).
 - [ ] Implement configuration loading from `config.txt`.
   - [ ] Support `MP3SPLIT_BINS_FOLDER`.
