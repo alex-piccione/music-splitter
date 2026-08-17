@@ -11,6 +11,11 @@
 
 ## Backlog
 
+- [ ] **[chore/04_publish_todo_update]** Publish the completed core-splitter TODO reconciliation through a pull request.
+  - [ ] Create the branch from the planned main commit.
+  - [ ] Push the branch and open a pull request.
+  - [ ] Verify the pull request has no unresolved review comments.
+
 - Feature: Config
   Add a `config.txt` file containing:
   - `MP3SPLIT_BINS_FOLDER`
