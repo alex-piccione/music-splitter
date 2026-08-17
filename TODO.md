@@ -11,11 +11,6 @@
 
 ## Backlog
 
-- [ ] **[chore/04_publish_todo_update]** Publish the completed core-splitter TODO reconciliation through a pull request.
-  - [ ] Create the branch from the planned main commit.
-  - [ ] Push the branch and open a pull request.
-  - [ ] Verify the pull request has no unresolved review comments.
-
 - Feature: Config
   Add a `config.txt` file containing:
   - `MP3SPLIT_BINS_FOLDER`
@@ -24,3 +19,4 @@
 ## Completed
 
 - **Split MP3 core engine** — Added the `MP3Splitter` implementation, `pydub` setup, metadata handling, naming logic, and unit tests.
+- **[chore/04_publish_todo_update]** — Published the completed core-splitter TODO reconciliation through merged PR #8.
