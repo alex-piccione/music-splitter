@@ -64,6 +64,10 @@ Or run directly without activating:
 .venv/bin/python main.py
 ```
 
+### Troubleshooting
+
+If running the app fails with `exit code: 127` (or "virtualenv not found"), the virtual environment doesn't exist yet. Run the **"🏗️ Setup Project"** task first, then run the app again.
+
 ## CUE file
 
 .cue file example:
