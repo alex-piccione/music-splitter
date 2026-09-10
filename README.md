@@ -51,6 +51,8 @@ sudo apt update && sudo apt install ffmpeg
 
 ## Usage
 
+> **Note:** VS Code will automatically detect and offer to activate `.venv`. You can also select the interpreter via `Ctrl+Shift+P` → `Python: Select Interpreter`.
+
 Activate the virtual environment and run:
 ```bash
 source .venv/bin/activate

@@ -15,7 +15,7 @@
   - [x] Install `uv`
   - [x] Create `.venv` with required dependencies
   - [x] Update README with `uv` install instructions
-  - [ ] Update `.vscode/tasks.json` for uv/venv workflow
+  - [x] Update `.vscode/tasks.json` for uv/venv workflow
 
 - Feature: Config
   Add a `config.txt` file containing:
