@@ -11,7 +11,9 @@
 
 ## Backlog
 
-- **Environment: uv + venv setup**
+## Completed
+
+- **Environment: uv + venv setup** ✅
   - [x] Install `uv`
   - [x] Create `.venv` with required dependencies
   - [x] Update README with `uv` install instructions
