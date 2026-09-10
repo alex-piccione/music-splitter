@@ -1,8 +1,5 @@
 # Changelog
 
-## Unreleased
-- Fixed 'Run Music-Splitter' task exit code 127 by invoking the venv interpreter directly with per-platform paths.
-
 ## 2026-07-06
 - Implement Core MP3 Splitting Engine.
 - Added unit tests for the splitter module.
