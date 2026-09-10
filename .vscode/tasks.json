@@ -29,11 +29,7 @@
         "reveal": "always",
         "panel": "new"
       },
-      "options": {
-        "env": {
-          "PATH": "${env:PATH};D:\\Standalone Programs\\FFMPEG\\bin"
-        }
-      }
+
     }
   ]
 }
