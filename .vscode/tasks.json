@@ -10,8 +10,9 @@
     {
       "label": "🚀 Run Music-Splitter",
       "type": "shell",
-      "command": ".venv/bin/python",
+      "command": "${workspaceFolder}/.venv/bin/python",
       "args": ["${workspaceFolder}/main.py"],
+      "cwd": "${workspaceFolder}",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -20,7 +21,8 @@
     {
       "label": "🧪 Run Tests",
       "type": "shell",
-      "command": ".venv/bin/python -m unittest discover tests",
+      "command": "${workspaceFolder}/.venv/bin/python -m unittest discover tests",
+      "cwd": "${workspaceFolder}",
       "group": {
         "kind": "test",
         "isDefault": true
@@ -28,8 +30,7 @@
       "presentation": {
         "reveal": "always",
         "panel": "new"
-      },
-
+      }
     }
   ]
 }
