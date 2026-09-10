@@ -10,8 +10,8 @@
     {
       "label": "🚀 Run Music-Splitter",
       "type": "shell",
-      "command": ".venv/bin/python",
-      "args": ["main.py"],
+      "command": "if [ -x .venv/bin/python ]; then PY=.venv/bin/python; elif [ -x .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe; else echo 'ERROR: virtualenv not found. Run the \"Setup Project\" task first.'; exit 1; fi; exec \"$PY\" main.py",
+      "args": [],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -23,7 +23,8 @@
     {
       "label": "🧪 Run Tests",
       "type": "shell",
-      "command": ".venv/bin/python -m unittest discover tests",
+      "command": "if [ -x .venv/bin/python ]; then PY=.venv/bin/python; elif [ -x .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe; else echo 'ERROR: virtualenv not found. Run the \"Setup Project\" task first.'; exit 1; fi; exec \"$PY\" -m unittest discover tests",
+      "args": [],
       "options": {
         "cwd": "${workspaceFolder}"
       },
