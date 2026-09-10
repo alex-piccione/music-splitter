@@ -15,7 +15,9 @@
         "command": ".venv/Scripts/python.exe"
       },
       "args": ["${workspaceFolder}/main.py"],
-      "cwd": "${workspaceFolder}",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": {
         "kind": "build",
         "isDefault": true
@@ -25,7 +27,9 @@
       "label": "🧪 Run Tests",
       "type": "shell",
       "command": "python -m unittest discover tests",
-      "cwd": "${workspaceFolder}",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": {
         "kind": "test",
         "isDefault": true
