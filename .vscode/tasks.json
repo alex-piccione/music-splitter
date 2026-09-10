@@ -4,7 +4,7 @@
     {
       "label": "🏗️ Setup Project",
       "type": "shell",
-      "command": "uv venv .venv --python 3.12 && uv pip install -r requirements.txt",
+      "command": "uv venv .venv --python 3.14 && uv pip install -r requirements.txt",
       "problemMatcher": []
     },
     {

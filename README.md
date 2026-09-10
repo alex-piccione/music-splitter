@@ -45,7 +45,7 @@ sudo apt update && sudo apt install ffmpeg
 1. Clone this repository.
 2. Create a virtual environment and install dependencies:
    ```bash
-   uv venv .venv --python 3.12
+   uv venv .venv --python 3.14
    uv pip install -r requirements.txt
    ```
 
