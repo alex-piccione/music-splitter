@@ -4,13 +4,13 @@
     {
       "label": "🏗️ Setup Project",
       "type": "shell",
-      "command": "pip install -r requirements.txt",
+      "command": "uv venv .venv --python 3.14 && uv pip install -r requirements.txt",
       "problemMatcher": []
     },
     {
       "label": "🚀 Run Music-Splitter",
       "type": "shell",
-      "command": "python",
+      "command": ".venv/bin/python",
       "args": ["${workspaceFolder}/main.py"],
       "group": {
         "kind": "build",
@@ -20,7 +20,7 @@
     {
       "label": "🧪 Run Tests",
       "type": "shell",
-      "command": "python -m unittest discover tests",
+      "command": ".venv/bin/python -m unittest discover tests",
       "group": {
         "kind": "test",
         "isDefault": true
@@ -29,11 +29,7 @@
         "reveal": "always",
         "panel": "new"
       },
-      "options": {
-           "env": {
-             "PATH": "D:\\Standalone Programs\\FFMPEG\\bin;${env:PATH}"
-           }
-      },
+
     }
   ]
 }

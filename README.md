@@ -35,18 +35,33 @@ sudo apt update && sudo apt install ffmpeg
 
 ## Installation
 
-1. Ensure you have [Python 3.x](https://www.python.org/) installed.
-2. Clone this repository.
-3. Install the required Python libraries:
+### Prerequisites
+
+- [uv](https://docs.astral.sh/uv/) — fast Python package manager
+- [FFmpeg](https://ffmpeg.org) — required by `pydub` for audio processing
+
+### Setup
+
+1. Clone this repository.
+2. Create a virtual environment and install dependencies:
    ```bash
-   pip install -r requirements.txt
+   uv venv .venv --python 3.14
+   uv pip install -r requirements.txt
    ```
 
 ## Usage
 
-Run the application using:
+> **Note:** VS Code will automatically detect and offer to activate `.venv`. You can also select the interpreter via `Ctrl+Shift+P` → `Python: Select Interpreter`.
+
+Activate the virtual environment and run:
 ```bash
+source .venv/bin/activate
 python main.py
+```
+
+Or run directly without activating:
+```bash
+.venv/bin/python main.py
 ```
 
 ## CUE file
