@@ -1,10 +1,12 @@
 # TODO
 
-## Backlog
+## In Progress
+- [ ] **[fix/07_run_task_venv]** Bug: application does not run (exit code 127)
+    - [x] Point Run task at venv interpreter with per-platform overrides
+    - [ ] User verifies on Windows machine
+    - [ ] Remove bug entry from Backlog once confirmed
 
-- Bug: application does not run
-  When I run the task "Run Music-Splitter" it fails:
-     > The terminal process "C:\Program Files\Git\bin\bash.exe '--login', '-i', '-c', 'P:\PiAgent_Container\Dev-1\projects\music-splitter/.venv/bin/python P:\PiAgent_Container\Dev-1\projects\music-splitter/main.py'" terminated with exit code: 127.
+## Backlog
 
 - Feature: Config
   Add a `config.txt` file containing:
