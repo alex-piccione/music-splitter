@@ -10,7 +10,7 @@
     {
       "label": "🚀 Run Music-Splitter",
       "type": "shell",
-      "command": "${workspaceFolder}/.venv/bin/python",
+      "command": "python",
       "args": ["${workspaceFolder}/main.py"],
       "cwd": "${workspaceFolder}",
       "group": {
@@ -21,7 +21,7 @@
     {
       "label": "🧪 Run Tests",
       "type": "shell",
-      "command": "${workspaceFolder}/.venv/bin/python -m unittest discover tests",
+      "command": "python -m unittest discover tests",
       "cwd": "${workspaceFolder}",
       "group": {
         "kind": "test",
