@@ -10,7 +10,10 @@
     {
       "label": "🚀 Run Music-Splitter",
       "type": "shell",
-      "command": "python",
+      "command": ".venv/bin/python",
+      "windows": {
+        "command": ".venv\\Scripts\\python.exe"
+      },
       "args": ["${workspaceFolder}/main.py"],
       "cwd": "${workspaceFolder}",
       "group": {
