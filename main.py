@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 from ui import create_main_window, alert
+from libs.splitter import MP3Splitter
 
 class MusicSplitterApp:
     def __init__(self):
@@ -47,9 +48,16 @@ class MusicSplitterApp:
             return
 
         self.log_message(f"Starting split process for: {os.path.basename(mp3_file)}")
-        alert(f"Processing: {os.path.basename(mp3_file)}", "Process Started")
-        
-        # TODO: Implement actual splitting logic using self.mp3splt_path
+
+        splitter = MP3Splitter()
+        output_folder = os.path.join(os.path.dirname(mp3_file), "split_output")
+        try:
+            parts = splitter.split(mp3_file, output_folder, segment_minutes=10.0)
+            self.log_message(f"Created {len(parts)} segments in: {output_folder}")
+            alert(f"Done! {len(parts)} segments saved.", "Split Complete")
+        except Exception as e:
+            self.log_message(f"Error: {e}")
+            alert(str(e), "Split Failed")
 
     def close_app(self):
         self.root.destroy()
