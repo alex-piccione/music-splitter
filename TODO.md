@@ -11,6 +11,12 @@
 
 ## Backlog
 
+- **Environment: uv + venv setup**
+  - [x] Install `uv`
+  - [x] Create `.venv` with required dependencies
+  - [ ] Update README with `uv` install instructions
+  - [ ] Update `.vscode/tasks.json` for uv/venv workflow
+
 - Feature: Config
   Add a `config.txt` file containing:
   - `MP3SPLIT_BINS_FOLDER`
