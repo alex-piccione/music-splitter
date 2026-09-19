@@ -9,9 +9,10 @@ class MusicSplitterApp:
         self.root = tk.Tk()
         self.last_selected_file = ""
         
-        # Load config from config.txt
-        self.bins_folder = self._load_config("MP3SPLIT_BINS_FOLDER", "./split_output")
-        self.segment_minutes = self._load_config("SPLIT_FIXED_DURATION_MINUTES", 10.0)
+        # Load settings from config.txt
+        self.config = self._read_config()
+        self.output_folder = self.config.get("OUTPUT_FOLDER", "./split_output")
+        self.segment_minutes = float(self.config.get("SPLIT_FIXED_DURATION_MINUTES", 10.0))
         
         # Initialize UI and get callback functions
         self.update_file_label, self.log_message = create_main_window(
@@ -20,19 +21,20 @@ class MusicSplitterApp:
             self.close_app
         )
 
-    def _load_config(self, key, default):
-        """Load a value from config.txt, return default if not found."""
+    @staticmethod
+    def _read_config():
+        """Parse KEY=VALUE lines from config.txt into a dict."""
+        config = {}
         try:
             with open("config.txt", "r") as f:
                 for line in f:
                     line = line.strip()
                     if line and not line.startswith("#") and "=" in line:
                         k, v = line.split("=", 1)
-                        if k.strip() == key:
-                            return v.strip() if key == "MP3SPLIT_BINS_FOLDER" else float(v.strip())
+                        config[k.strip()] = v.strip()
         except FileNotFoundError:
             pass
-        return default
+        return config
 
     def select_file(self, extension):
         if not extension:
@@ -68,9 +70,8 @@ class MusicSplitterApp:
         
         try:
             splitter = MP3Splitter()
-            output_folder = os.path.join(os.path.dirname(mp3_file), self.bins_folder)
-            segment_minutes = float(self.segment_minutes)
-            created_files = splitter.split(mp3_file, output_folder, segment_minutes)
+            output_folder = os.path.join(os.path.dirname(mp3_file), self.output_folder)
+            created_files = splitter.split(mp3_file, output_folder, self.segment_minutes)
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:
             self.log_message(f"Error during split: {e}")
