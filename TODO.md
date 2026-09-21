@@ -8,7 +8,7 @@
 
 - Feature 5: the user should be able to decide the parts length, default: 10 seconds. The selection should obviously be persisted as a user preference.
 
-- Feature 7: Replace teh log text wit ha simple Message bar.:
+- Feature 7: Replace the log text with a simple Message bar.:
   It will inform the user of hte latest completed actions, errors, etc...
   Do we really need a "log"? we can discuss of this. 
   Maybe it can be a file that can be opened and sent to the repo to feeedback a bug?
