@@ -4,7 +4,7 @@ import shutil
 import tempfile
 from libs.splitter import MP3Splitter
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3
+from mutagen.id3 import ID3, TRK
 
 class TestMP3Splitter(unittest.TestCase):
     @classmethod
@@ -110,6 +110,33 @@ class TestMP3Splitter(unittest.TestCase):
         self.assertEqual(str(audio['TPE1'][0]), 'Test Artist')
         self.assertIn('TALB', audio)
         self.assertEqual(str(audio['TALB'][0]), 'Test Album')
+
+    def test_trk_added_when_source_has_none(self):
+        """Source without TRK: each part gets TRK '{part}/{total}'."""
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
+        for i, part in enumerate(parts, start=1):
+            audio = MP3(part)
+            self.assertIn('TRCK', audio)
+            self.assertEqual(str(audio['TRCK'][0]), f"{i}/3")
+
+    def test_trk_preserved_when_source_has_one(self):
+        """Source with TRK: it is copied verbatim, never overridden."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "with_trk.mp3")
+            shutil.copyfile(self.fixture_path, src)
+            audio = MP3(src)
+            audio.tags.add(TRK(encoding=3, text="7/18"))
+            audio.save()
+            out_dir = os.path.join(tmp, "out")
+            try:
+                parts = self.splitter.split(src, out_dir, 5/60)
+                for part in parts:
+                    seg = MP3(part)
+                    self.assertIn('TRCK', seg)
+                    self.assertEqual(str(seg['TRCK'][0]), "7/18")
+            finally:
+                if os.path.exists(out_dir):
+                    shutil.rmtree(out_dir)
 
 if __name__ == '__main__':
     unittest.main()
