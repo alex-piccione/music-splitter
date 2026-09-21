@@ -35,15 +35,18 @@ class MusicSplitterApp:
         
         # Load settings from config.txt
         self.config = self._read_config()
-        self.segment_minutes = float(self.config.get("SPLIT_FIXED_DURATION_MINUTES", 10.0))
+        self.part_length_m = int(self.config.get("PART_LENGTH_MINUTES", 10))
         self.filename_format = self.config.get("FILENAME_FORMAT", "numbers")
         
         # Initialize UI and get callback functions
-        self.update_file_label, self.log_message, self.get_filename_format = create_main_window(
-            self.root, 
-            self.on_split_button_click, 
-            self.close_app,
-            filename_format=self.filename_format,
+        self.update_file_label, self.log_message, self.get_filename_format, self.get_part_length_m = (
+            create_main_window(
+                self.root,
+                self.on_split_button_click,
+                self.close_app,
+                filename_format=self.filename_format,
+                initial_part_length_m=self.part_length_m,
+            )
         )
 
     @staticmethod
@@ -115,9 +118,11 @@ class MusicSplitterApp:
         try:
             splitter = MP3Splitter()
             output_folder = MP3Splitter.default_output_folder(mp3_file)
+            part_length_m = self.get_part_length_m()
             created_files = splitter.split(
-                mp3_file, output_folder, self.segment_minutes, naming=naming,
+                mp3_file, output_folder, part_length_m, naming=naming,
             )
+            self._save_config_key("PART_LENGTH_MINUTES", str(part_length_m))
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:
             self.log_message(f"Error during split: {e}")

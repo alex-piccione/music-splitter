@@ -47,7 +47,7 @@ class TestMainWindow(unittest.TestCase):
         self.root.withdraw()
         self.split_calls = []
         self.close_called = False
-        self.update_file_label, self.log_message, self.get_filename_format = (
+        self.update_file_label, self.log_message, self.get_filename_format, self.get_part_length_m = (
             create_main_window(
                 self.root,
                 lambda: self.split_calls.append(1),
@@ -73,6 +73,29 @@ class TestMainWindow(unittest.TestCase):
     def test_window_title(self):
         self.assertEqual(self.root.title(), "Music Splitter")
 
+    def test_part_length_default(self):
+        self.assertEqual(self.get_part_length_m(), 10)
+
+    def test_part_length_options(self):
+        radios = [r for r in self._radios()
+                  if str(r.cget("value")) in {"5", "10", "15"}]
+        self.assertEqual({str(r.cget("value")) for r in radios}, {"5", "10", "15"})
+
+    def test_part_length_selection_reports_choice(self):
+        target = next(r for r in self._radios() if str(r.cget("value")) == "15")
+        target.invoke()
+        self.assertEqual(self.get_part_length_m(), 15)
+
+    def test_part_length_custom_initial(self):
+        root = tk.Tk()
+        root.withdraw()
+        callbacks = create_main_window(
+            root, lambda: None, lambda: None, initial_part_length_m=5,
+        )
+        try:
+            self.assertEqual(callbacks[3](), 5)
+        finally:
+            root.destroy()
     def test_split_button_triggers_callback(self):
         button = next(b for b in self._buttons() if b.cget("text") == "Split File")
         button.invoke()
@@ -107,7 +130,8 @@ class TestMainWindow(unittest.TestCase):
         return self._collect(self.root, ttk.Radiobutton, [])
 
     def test_naming_radios_default_to_numbers(self):
-        radios = self._radios()
+        radios = [r for r in self._radios()
+                  if str(r.cget("value")) in {"numbers", "file+numbers"}]
         self.assertEqual(len(radios), 2)
         values = {str(r.cget("value")) for r in radios}
         self.assertEqual(values, {"numbers", "file+numbers"})
@@ -122,7 +146,7 @@ class TestMainWindow(unittest.TestCase):
         root2 = tk.Tk()
         root2.withdraw()
         try:
-            _, _, get_fmt = create_main_window(
+            _, _, get_fmt, _ = create_main_window(
                 root2, lambda: None, lambda: None, filename_format="file+numbers"
             )
             self.assertEqual(get_fmt(), "file+numbers")
