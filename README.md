@@ -89,6 +89,10 @@ FILE "Ambient Lounge - Vol. 5 - CD 1.mp3" MP3
     INDEX 01 11:01:01
 ```
 
+## Documentation
+
+- [ID3_tag.md](./ID3_tag.md) - The ID3v2 tags written to the split files.
+
 ## Project Management
 
 
