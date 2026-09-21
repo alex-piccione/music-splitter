@@ -1,30 +1,43 @@
-import json
 import os
 import tkinter as tk
 from tkinter import filedialog
 from ui import create_main_window, alert
 from libs.splitter import MP3Splitter
 
-PREFERENCES_FILE = "preferences.json"
+SETTINGS_FILE = "settings.txt"
+
+
+def read_settings():
+    """Parse KEY=VALUE lines from settings.txt into a dict."""
+    settings = {}
+    try:
+        with open(SETTINGS_FILE, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    settings[k.strip()] = v.strip()
+    except FileNotFoundError:
+        pass
+    return settings
+
+
+def save_setting(key, value):
+    """Persist one setting, preserving any other lines currently in settings.txt."""
+    settings = read_settings()
+    settings[key] = value
+    try:
+        with open(SETTINGS_FILE, "w") as f:
+            for k, v in settings.items():
+                f.write(f"{k}={v}\n")
+    except OSError:
+        pass
 
 
 def load_last_dir():
     """Return the last directory used in the file dialog, or '' if unknown."""
-    try:
-        with open(PREFERENCES_FILE) as f:
-            data = json.load(f)
-    except (OSError, json.JSONDecodeError):
-        return ""
-    d = data.get("last_dir") if isinstance(data, dict) else None
+    d = read_settings().get("LAST_DIR", "")
     return d if isinstance(d, str) and os.path.isdir(d) else ""
-
-
-def save_last_dir(dir_path):
-    try:
-        with open(PREFERENCES_FILE, "w") as f:
-            json.dump({"last_dir": dir_path}, f)
-    except OSError:
-        pass
 
 
 class MusicSplitterApp:
@@ -33,8 +46,8 @@ class MusicSplitterApp:
         self.last_selected_file = ""
         self.last_dir = load_last_dir()
         
-        # Load settings from config.txt
-        self.config = self._read_config()
+        # Load settings from settings.txt
+        self.config = read_settings()
         self.segment_minutes = float(self.config.get("SPLIT_FIXED_DURATION_MINUTES", 10.0))
         self.filename_format = self.config.get("FILENAME_FORMAT", "numbers")
         
@@ -45,33 +58,6 @@ class MusicSplitterApp:
             self.close_app,
             filename_format=self.filename_format,
         )
-
-    @staticmethod
-    def _read_config():
-        """Parse KEY=VALUE lines from config.txt into a dict."""
-        config = {}
-        try:
-            with open("config.txt", "r") as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith("#") and "=" in line:
-                        k, v = line.split("=", 1)
-                        config[k.strip()] = v.strip()
-        except FileNotFoundError:
-            pass
-        return config
-
-    @staticmethod
-    def _save_config_key(key, value):
-        """Persist one setting, preserving any other lines currently in config.txt."""
-        config = MusicSplitterApp._read_config()
-        config[key] = value
-        try:
-            with open("config.txt", "w") as f:
-                for k, v in config.items():
-                    f.write(f"{k}={v}\n")
-        except OSError:
-            pass
 
     def select_file(self, extension):
         if not extension:
@@ -91,7 +77,7 @@ class MusicSplitterApp:
         if filename:
             self.last_selected_file = filename
             self.last_dir = os.path.dirname(filename)
-            save_last_dir(self.last_dir)
+            save_setting("LAST_DIR", self.last_dir)
             self.update_file_label(filename)
             self.log_message(f"File selected: {os.path.basename(filename)}")
         else:
@@ -110,7 +96,7 @@ class MusicSplitterApp:
         naming = self.get_filename_format()
         if naming != self.filename_format:
             self.filename_format = naming
-            self._save_config_key("FILENAME_FORMAT", naming)
+            save_setting("FILENAME_FORMAT", naming)
 
         try:
             splitter = MP3Splitter()

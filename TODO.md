@@ -2,9 +2,6 @@
 
 ## Backlog
 
-- Bug: User rpeferences are splitted in 2 difefrent files: config.txt and preferences.json
-  Use "settings.txt" if a json format is not required.
-
 - Feature 11: instead of "01.mp3" or "album_01.mp3" it should be "part_01.mp3" and "album_part_01.mp3"
 
 - Feature 5: the user should be able to decide the parts length, default: 10 minutes. The selection should obviously be persisted as a user preference.

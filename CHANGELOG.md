@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-22
+- Unified user settings into a single `settings.txt` (KEY=VALUE), replacing the split between `config.txt` and `preferences.json`; removed the stray committed `config.txt`.
 - Feature 4: added a "File names" selector (radio buttons): *Numbers* (`01.mp3`) or *File+Numbers* (`<source_stem>_01.mp3`); choice is persisted in `config.txt` (`FILENAME_FORMAT`).
 - Added `ID3_tag.md` documenting the ID3v2 tags written to split files; linked from README.
 - Feature 1: "Split File" dialog now opens in the last directory used, persisted across app runs via `preferences.json`.
