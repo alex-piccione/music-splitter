@@ -16,6 +16,13 @@ class MP3Splitter:
         pass
 
     @staticmethod
+    def default_output_folder(input_path: str) -> str:
+        """Returns <source_dir>/<source_stem>, i.e. a folder named after the source file."""
+        directory = os.path.dirname(os.path.abspath(input_path))
+        stem = os.path.splitext(os.path.basename(input_path))[0]
+        return os.path.join(directory, stem)
+
+    @staticmethod
     def _find_ffmpeg() -> str:
         path = shutil.which("ffmpeg")
         if not path:

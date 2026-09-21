@@ -11,7 +11,6 @@ class MusicSplitterApp:
         
         # Load settings from config.txt
         self.config = self._read_config()
-        self.output_folder = self.config.get("OUTPUT_FOLDER", "./split_output")
         self.segment_minutes = float(self.config.get("SPLIT_FIXED_DURATION_MINUTES", 10.0))
         
         # Initialize UI and get callback functions
@@ -70,7 +69,7 @@ class MusicSplitterApp:
         
         try:
             splitter = MP3Splitter()
-            output_folder = os.path.join(os.path.dirname(mp3_file), self.output_folder)
+            output_folder = MP3Splitter.default_output_folder(mp3_file)
             created_files = splitter.split(mp3_file, output_folder, self.segment_minutes)
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:

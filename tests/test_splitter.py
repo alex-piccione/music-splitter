@@ -1,6 +1,7 @@
 import unittest
 import os
 import shutil
+import tempfile
 from libs.splitter import MP3Splitter
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3
@@ -57,6 +58,29 @@ class TestMP3Splitter(unittest.TestCase):
         """Ensure FileNotFoundError is raised for missing files."""
         with self.assertRaises(FileNotFoundError):
             self.splitter.split("non_existent.mp3", self.output_dir, 1.0)
+
+    def test_default_output_folder(self):
+        """The default output folder is named after the source file (no extension)."""
+        self.assertEqual(
+            MP3Splitter.default_output_folder("/music/DJ Session.mp3"),
+            "/music/DJ Session",
+        )
+
+    def test_split_into_source_named_folder(self):
+        """Segments land inside a folder created next to the source file."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "My Mix.mp3")
+            shutil.copyfile('tests/fixtures/sample.mp3', src)
+            out_dir = MP3Splitter.default_output_folder(src)
+            try:
+                parts = self.splitter.split(src, out_dir, 5/60)
+                self.assertEqual(len(parts), 3)
+                self.assertTrue(os.path.isdir(out_dir))
+                for p in parts:
+                    self.assertEqual(os.path.dirname(p), out_dir)
+            finally:
+                if os.path.exists(out_dir):
+                    shutil.rmtree(out_dir)
 
     def test_metadata_preservation(self):
         """Verify metadata is copied correctly."""
