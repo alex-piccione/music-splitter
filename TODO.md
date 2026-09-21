@@ -5,6 +5,9 @@
 
 - Feature 1: When I click "Split file" it has to open the dialog on the last directory I used (apart from first app use obviously)
 
+- Feature 2: When it splits the file it should try to create a folder with the same name of the source file, and put the files there.
+
+- Feature 4: Two option buttons should allow to select the file name format. "File names"  (a) Numbers ("01.mp3")  (b) File+Numbers ("DJ-AAA 2028-12-31 full_session_01.mp3")
 
 
 - **[docs/01_id3_tag]** Create `ID3_tag.md` documenting the ID3v2 tags written by the app:
