@@ -6,7 +6,18 @@
 
 - Feature 4: Two option buttons should allow to select the file name format. "File names"  (a) Numbers ("01.mp3")  (b) File+Numbers ("DJ-AAA 2028-12-31 full_session_01.mp3")
 
-- Feature 5: the user should be able to decide the parts length, default: 10 seconds. The selection should obviously be persisted as a user preference.
+- Feature 5: the user should be able to decide the parts length, default: 10 minutes. The selection should obviously be persisted as a user preference.
+
+- Feature 8: Add TRK tag (don't override it if already exists!)
+
+- Feature 10: Add the COMM tag for this text: "Original file split with Music Splitter by Alessandro Piccione."
+  Frame:       COMM
+  Language:    eng
+  Description: Splitter provenance
+  Text:        Original file split with Music Splitter by Alessandro Piccione.
+
+  The text should be stored in ui-text/english.yml
+
 
 - Feature 7: Replace the log text with a simple Message bar.:
   It will inform the user of hte latest completed actions, errors, etc...
