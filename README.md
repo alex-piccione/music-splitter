@@ -11,7 +11,7 @@ An utility tool designed to split large MP3 audio files into smaller segments ba
 
 ## Prerequisites
 
-This application requires **FFmpeg** to process audio files via the `pydub` library.
+This application requires **FFmpeg** to split audio files (lossless stream-copy, no re-encoding).
 
 ### Installation of FFmpeg
 
@@ -38,7 +38,7 @@ sudo apt update && sudo apt install ffmpeg
 ### Prerequisites
 
 - [uv](https://docs.astral.sh/uv/) — fast Python package manager
-- [FFmpeg](https://ffmpeg.org) — required by `pydub` for audio processing
+- [FFmpeg](https://ffmpeg.org) — used directly for lossless MP3 splitting
 
 ### Setup
 

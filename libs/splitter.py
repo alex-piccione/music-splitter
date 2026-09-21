@@ -1,16 +1,28 @@
 import os
 import math
-from pydub import AudioSegment
+import shutil
+import subprocess
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, ID3NoHeaderError
+
 
 class MP3Splitter:
     """
     A utility class to split MP3 files into equal segments while preserving metadata.
+    Uses FFmpeg stream-copy (-c copy): lossless and fast, no re-encoding.
     """
 
     def __init__(self):
         pass
+
+    @staticmethod
+    def _find_ffmpeg() -> str:
+        path = shutil.which("ffmpeg")
+        if not path:
+            raise RuntimeError(
+                "FFmpeg was not found on PATH. Install FFmpeg and ensure 'ffmpeg' is accessible."
+            )
+        return path
 
     def split(self, input_path: str, output_folder: str, segment_minutes: float) -> list[str]:
         """
@@ -43,35 +55,39 @@ class MP3Splitter:
             os.makedirs(output_folder)
 
         try:
-            # Load the audio file
-            audio = AudioSegment.from_file(input_path, format="mp3")
-            duration_ms = len(audio)
-            segment_ms = int(segment_minutes * 60 * 1000)
-            
-            num_segments = math.ceil(duration_ms / segment_ms)
-            created_files = []
+            ffmpeg = self._find_ffmpeg()
+
+            duration_s = MP3(input_path).info.length
+            segment_s = segment_minutes * 60
+            num_segments = max(1, math.ceil(duration_s / segment_s))
 
             # Prepare metadata from original file
             original_tags = None
             try:
                 original_tags = ID3(input_path)
             except ID3NoHeaderError:
-                pass # No tags present
+                pass  # No tags present
 
+            created_files = []
             for i in range(num_segments):
-                start_time = i * segment_ms
-                end_time = min((i + 1) * segment_ms, duration_ms)
-                
-                # Extract the segment
-                segment = audio[start_time:end_time]
-                
-                # Generate filename: 01.mp3, 02.mp3, etc.
+                start_s = i * segment_s
+                length_s = min(segment_s, duration_s - start_s)
+
                 filename = f"{str(i + 1).zfill(2)}.mp3"
                 output_path = os.path.join(output_folder, filename)
-                
-                # Export the segment
-                segment.export(output_path, format="mp3")
-                
+
+                cmd = [
+                    ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
+                    "-ss", f"{start_s:.3f}",
+                    "-t", f"{length_s:.3f}",
+                    "-i", input_path,
+                    "-c", "copy",
+                    output_path,
+                ]
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                if result.returncode != 0:
+                    raise Exception(result.stderr.strip())
+
                 # Copy metadata if available
                 if original_tags:
                     try:
