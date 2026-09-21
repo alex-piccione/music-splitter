@@ -1,0 +1,38 @@
+# ID3 Tags
+
+When Music Splitter splits an MP3 file, it copies the **ID3v2 metadata** from the source file into every generated segment using [`mutagen`](https://mutagen.readthedocs.io/). The segments therefore carry the same identifying information as the original file and remain usable in media players that rely on tags.
+
+## Primary tags
+
+The following ID3v2 frames are the ones the app is designed around (and verified by the test suite):
+
+| Code | Meaning                 | Value in test |
+|------|-------------------------|---------------|
+| TIT2 | Title (Track title)     | 'Test Title'  |
+| TPE1 | Lead performer (Artist) | 'Test Artist' |
+| TALB | Album name              | 'Test Album'  |
+| TRK  | Track number            | e.g. `3/12`   |
+| COMM | Comment                 | free text     |
+
+### TRK — Track number
+
+A simple text frame holding the track position, optionally followed by `/total` (e.g. `7/18`). It is copied as-is like every other frame, so segments keep whatever numbering the source file had.
+
+### COMM — Comment
+
+Unlike most frames, a comment carries two extra properties alongside its text:
+
+- **language** — ISO 639-2 code identifying the language of the comment,
+- **description** — a short label describing what the comment refers to.
+
+Because these properties are part of the frame's identity, a single file may contain **multiple COMM frames** (different languages or descriptions). All of them are preserved on each segment during the copy.
+
+## Copy behaviour
+
+- All ID3v2 frames present in the source file are copied **verbatim** to each segment — not only the primary tags listed above. Any extra frames (e.g. genre, cover art) survive the split unchanged.
+- If the source file has **no ID3 header**, the segments are created without tags (splitting still succeeds).
+- Tag copying happens after the FFmpeg stream-copy (`-c copy`) of the audio data; if saving tags fails for a given segment, splitting continues and a warning is printed instead of aborting.
+
+## Where this happens
+
+See `MP3Splitter.split()` in [libs/splitter.py](./libs/splitter.py) and the metadata tests in [tests/test_splitter.py](./tests/test_splitter.py).
