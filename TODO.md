@@ -2,14 +2,6 @@
 
 ## Backlog
 
-- Bug: UI is non-sense.
-  - I click "Split File" that is on top and there is a settings for the name format below? The settings should go on top.
-  - What is "Selected File"  for ? remove.
-  - Status log... for what? Remove.
-  - Why "Split File" shows a popup with a save button? it should just ask which file directly.
-
-  Probably we need a branstorming to review the UX completely.
-
 - Feature 11: instead of "01.mp3" or "album_01.mp3" it should be "part_01.mp3" and "album_part_01.mp3"
 
 
@@ -22,9 +14,6 @@
   The text should be stored in ui-text/english.yml
 
 
-- Feature 7: Replace the log text with a simple Message bar.:
-  It will inform the user of hte latest completed actions, errors, etc...
-  Do we really need a "log"? we can discuss of this. 
-  Maybe it can be a file that can be opened and sent to the repo to feeedback a bug?
+- Feature 7: The internal log will be replaced by a log file, plus a button that shows it when an operation fails.
 
 - Feature 6: Add an installer for Windows (should it comprehend a ffmpeg too? maybe used only if not already present in the system?)

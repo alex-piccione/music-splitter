@@ -1,7 +1,9 @@
 import os
+import threading
+from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog
-from ui import create_main_window, alert
+from ui import create_main_window
 from libs.splitter import MP3Splitter
 
 SETTINGS_FILE = "settings.txt"
@@ -45,37 +47,41 @@ class MusicSplitterApp:
         self.root = tk.Tk()
         self.last_selected_file = ""
         self.last_dir = load_last_dir()
-        
+        # In-memory log; will later be backed by a log file shown on failure
+        self.log_lines = []
+
         # Load settings from settings.txt
         self.config = read_settings()
         self.part_length_m = int(self.config.get("PART_LENGTH_MINUTES", 10))
         self.filename_format = self.config.get("FILENAME_FORMAT", "numbers")
-        
+
         # Initialize UI and get callback functions
-        self.update_file_label, self.log_message, self.get_filename_format, self.get_part_length_m = (
-            create_main_window(
-                self.root,
-                self.on_split_button_click,
-                self.close_app,
-                filename_format=self.filename_format,
-                initial_part_length_m=self.part_length_m,
-            )
+        (self.update_file_label, self.set_message, self.set_enabled,
+         self.get_filename_format, self.get_part_length_m) = create_main_window(
+            self.root,
+            self.on_browse_click,
+            self.on_split_button_click,
+            filename_format=self.filename_format,
+            initial_part_length_m=self.part_length_m,
         )
+
+    def log_message(self, msg):
+        stamp = datetime.now().isoformat(timespec="seconds")
+        self.log_lines.append(f"[{stamp}] {msg}")
 
     def select_file(self, extension):
         if not extension:
-            alert("Please, provide an extension.", "Select a file", master=self.root)
             self.log_message("Error: No extension provided.")
             return None
-        
+
         initial_dir = self.last_dir or "."
         file_types = [("MP3", ".mp3")] if extension == "mp3" else None
-        
+
         filename = filedialog.askopenfilename(
-            title=f"Select a {extension} file", 
-            initialdir=initial_dir, 
+            title=f"Select a {extension} file",
+            initialdir=initial_dir,
             filetypes=file_types
-        )    
+        )
 
         if filename:
             self.last_selected_file = filename
@@ -85,40 +91,63 @@ class MusicSplitterApp:
             self.log_message(f"File selected: {os.path.basename(filename)}")
         else:
             self.log_message("File selection cancelled.")
-        
+
         return filename
 
+    def on_browse_click(self):
+        filename = self.select_file("mp3")
+        if filename:
+            self.set_message("")
+            self.set_enabled(True)
+
     def on_split_button_click(self):
-        mp3_file = self.select_file("mp3")
+        mp3_file = self.last_selected_file
         if not mp3_file:
             return
 
-        self.log_message(f"Starting split process for: {os.path.basename(mp3_file)}")
-        alert(f"Processing: {os.path.basename(mp3_file)}", "Process Started", master=self.root)
-        
         naming = self.get_filename_format()
-        if naming != self.filename_format:
-            self.filename_format = naming
-            save_setting("FILENAME_FORMAT", naming)
+        part_length_m = self.get_part_length_m()
 
+        self.set_enabled(False)
+        self.set_message(f"Splitting {os.path.basename(mp3_file)}…")
+        self.log_message(f"Starting split process for: {os.path.basename(mp3_file)}")
+
+        threading.Thread(target=self._run_split, args=(mp3_file, naming, part_length_m), daemon=True).start()
+
+    def _run_split(self, mp3_file, naming, part_length_m):
         try:
             splitter = MP3Splitter()
             output_folder = MP3Splitter.default_output_folder(mp3_file)
-            part_length_m = self.get_part_length_m()
             created_files = splitter.split(
                 mp3_file, output_folder, part_length_m, naming=naming,
             )
-            save_setting("PART_LENGTH_MINUTES", str(part_length_m))
+            result = (len(created_files), None)
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:
+            result = (None, str(e))
             self.log_message(f"Error during split: {e}")
-            alert(str(e), "Split Error", master=self.root)
+
+        # Persist settings and update the UI from the main thread only
+        self.root.after(0, lambda: self._on_split_done(naming, part_length_m, *result))
+
+    def _on_split_done(self, naming, part_length_m, count, error):
+        if naming != self.filename_format:
+            self.filename_format = naming
+            save_setting("FILENAME_FORMAT", naming)
+        save_setting("PART_LENGTH_MINUTES", str(part_length_m))
+
+        if error is not None:
+            self.set_message(error, is_error=True)
+        else:
+            self.set_message(f"Done: {count} parts created")
+        self.set_enabled(True)
 
     def close_app(self):
         self.root.destroy()
 
     def run(self):
         self.root.mainloop()
+
 
 if __name__ == "__main__":
     app = MusicSplitterApp()
