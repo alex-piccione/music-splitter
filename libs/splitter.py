@@ -3,7 +3,7 @@ import math
 import shutil
 import subprocess
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, ID3NoHeaderError
+from mutagen.id3 import ID3, ID3NoHeaderError, TRK
 
 
 class MP3Splitter:
@@ -111,14 +111,18 @@ class MP3Splitter:
                     raise Exception(result.stderr.strip())
 
                 # Copy metadata if available
-                if original_tags:
-                    try:
-                        target_tags = ID3(output_path)
+                try:
+                    target_tags = ID3(output_path)
+                    if original_tags:
                         for key, value in original_tags.items():
                             target_tags.add(value)
-                        target_tags.save()
-                    except Exception as e:
-                        print(f"Warning: Could not copy metadata to {filename}: {e}")
+                    # Label each part with its position unless the source already had a track number.
+                    # Note: the frame class is named TRK but its ID3v2 code (and dict key) is 'TRCK'
+                    if 'TRCK' not in target_tags:
+                        target_tags.add(TRK(encoding=3, text=f"{i+1}/{num_segments}"))
+                    target_tags.save()
+                except Exception as e:
+                    print(f"Warning: Could not copy metadata to {filename}: {e}")
 
                 created_files.append(output_path)
 

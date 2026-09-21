@@ -16,7 +16,10 @@ The following ID3v2 frames are the ones the app is designed around (and verified
 
 ### TRK — Track number
 
-A simple text frame holding the track position, optionally followed by `/total` (e.g. `7/18`). It is copied as-is like every other frame, so segments keep whatever numbering the source file had.
+A simple text frame holding the track position, optionally followed by `/total` (e.g. `7/18`).
+
+- If the **source** file has a TRK frame, it is copied as-is to every segment — never overridden.
+- If the **source** has none, each segment gets its own position within the split: part *i* of *N* becomes `i/N` (e.g. splitting into 5 parts yields `1/5` … `5/5`).
 
 ### COMM — Comment
 
