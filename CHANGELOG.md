@@ -7,7 +7,7 @@
 
 ## 2026-09-21
 - Added "File names" option (radio buttons): *Numbers* (`01.mp3`) or *File+Numbers* (`<source_stem>_01.mp3`); choice persisted in `config.txt`.
-- Part length is now user-selectable in seconds via a spinbox (default: 600 s = 10 minutes); persisted as `PART_LENGTH_SECONDS`. Removed the obsolete `SPLIT_FIXED_DURATION_MINUTES` setting.
+- Part length is now user-selectable via radio buttons: **5**, **10** or **15 minutes** (default: 10); persisted as `PART_LENGTH_MINUTES`. Removed the obsolete `SPLIT_FIXED_DURATION_MINUTES` setting.
 - Split output now goes into a folder named after the source file (e.g., `My Mix.mp3` → `My Mix/01.mp3`, …), created next to the source file.
 - Removed the obsolete `OUTPUT_FOLDER` setting from `config.txt`.
 - Replaced unmaintained `pydub` with direct FFmpeg stream-copy (`-c copy`) splitting: fixes `audioop` ModuleNotFoundError on Python ≥3.13 and SyntaxWarning noise; splitting is now lossless (no re-encode).

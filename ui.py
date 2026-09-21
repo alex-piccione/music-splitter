@@ -26,7 +26,7 @@ def alert(message, title="Alert", master=None):
     ok_button = ttk.Button(alert_window, text="OK", command=alert_window.destroy)
     ok_button.pack(side=tk.BOTTOM, anchor=tk.S, padx=pad, pady=pad)
 
-def create_main_window(root, split_file, close_app, filename_format="numbers", initial_part_length_s=600):
+def create_main_window(root, split_file, close_app, filename_format="numbers", initial_part_length_m=10):
     # Use ttk style
     style = ttk.Style()
     
@@ -71,14 +71,16 @@ def create_main_window(root, split_file, close_app, filename_format="numbers", i
         variable=naming_var, value="file+numbers",
     ).pack(side=tk.LEFT)
 
-    # Part length selection (in seconds)
-    part_len_var = tk.StringVar(value=str(initial_part_length_s))
+    # Part length selection (minutes: 5 / 10 / 15)
+    part_len_var = tk.StringVar(value=str(initial_part_length_m))
     part_len_frame = ttk.LabelFrame(main_frame, text="Part length", padding="10")
     part_len_frame.pack(fill=tk.X, pady=10)
 
-    ttk.Spinbox(part_len_frame, from_=1, to=3600, width=6,
-                textvariable=part_len_var).pack(side=tk.LEFT)
-    ttk.Label(part_len_frame, text="seconds").pack(side=tk.LEFT, padx=(pad_xs, 0))
+    for minutes in ("5", "10", "15"):
+        ttk.Radiobutton(
+            part_len_frame, text=f"{minutes} min",
+            variable=part_len_var, value=minutes,
+        ).pack(side=tk.LEFT, padx=(0, pad_xl))
 
     # --- NEW: File Selection Display ---
     file_display_frame = ttk.LabelFrame(main_frame, text="Selected File", padding="10")
@@ -114,7 +116,7 @@ def create_main_window(root, split_file, close_app, filename_format="numbers", i
     def get_filename_format():
         return naming_var.get()
 
-    def get_part_length_s():
-        return max(1, int(part_len_var.get()))
+    def get_part_length_m():
+        return int(part_len_var.get())
 
-    return update_file_label, log_message, get_filename_format, get_part_length_s
+    return update_file_label, log_message, get_filename_format, get_part_length_m
