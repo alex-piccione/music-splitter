@@ -82,6 +82,17 @@ class TestMP3Splitter(unittest.TestCase):
                 if os.path.exists(out_dir):
                     shutil.rmtree(out_dir)
 
+    def test_split_naming_file_plus_numbers(self):
+        """Segments are named after the source file stem plus number."""
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60, naming="file+numbers")
+        for i in range(1, len(parts)+1):
+            self.assertTrue(os.path.exists(os.path.join(self.output_dir, f"sample_{str(i).zfill(2)}.mp3")))
+
+    def test_invalid_naming(self):
+        with self.assertRaises(ValueError) as cm:
+            self.splitter.split(self.fixture_path, self.output_dir, 1.0, naming="bogus")
+        self.assertIn("Unknown naming format", str(cm.exception))
+
     def test_metadata_preservation(self):
         """Verify metadata is copied correctly."""
         parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)

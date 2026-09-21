@@ -47,7 +47,7 @@ class TestMainWindow(unittest.TestCase):
         self.root.withdraw()
         self.split_calls = []
         self.close_called = False
-        self.update_file_label, self.log_message = create_main_window(
+        self.update_file_label, self.log_message, self.get_naming = create_main_window(
             self.root,
             lambda: self.split_calls.append(1),
             lambda: setattr(self, "close_called", True),
@@ -70,6 +70,9 @@ class TestMainWindow(unittest.TestCase):
 
     def test_window_title(self):
         self.assertEqual(self.root.title(), "Music Splitter")
+
+    def test_naming_default(self):
+        self.assertEqual(self.get_naming(), "numbers")
 
     def test_split_button_triggers_callback(self):
         button = next(b for b in self._buttons() if b.cget("text") == "Split File")

@@ -12,12 +12,14 @@ class MusicSplitterApp:
         # Load settings from config.txt
         self.config = self._read_config()
         self.segment_minutes = float(self.config.get("SPLIT_FIXED_DURATION_MINUTES", 10.0))
+        self.filename_format = self.config.get("FILENAME_FORMAT", "numbers")
         
         # Initialize UI and get callback functions
-        self.update_file_label, self.log_message = create_main_window(
+        self.update_file_label, self.log_message, self.get_naming = create_main_window(
             self.root, 
             self.on_split_button_click, 
-            self.close_app
+            self.close_app,
+            initial_naming=self.filename_format
         )
 
     @staticmethod
@@ -34,6 +36,15 @@ class MusicSplitterApp:
         except FileNotFoundError:
             pass
         return config
+
+    @staticmethod
+    def _save_config(updates):
+        """Merge updates into config.txt, preserving existing keys."""
+        config = MusicSplitterApp._read_config()
+        config.update(updates)
+        with open("config.txt", "w") as f:
+            for k, v in config.items():
+                f.write(f"{k}={v}\n")
 
     def select_file(self, extension):
         if not extension:
@@ -70,7 +81,9 @@ class MusicSplitterApp:
         try:
             splitter = MP3Splitter()
             output_folder = MP3Splitter.default_output_folder(mp3_file)
-            created_files = splitter.split(mp3_file, output_folder, self.segment_minutes)
+            naming = self.get_naming()
+            created_files = splitter.split(mp3_file, output_folder, self.segment_minutes, naming=naming)
+            self._save_config({"FILENAME_FORMAT": naming})
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:
             self.log_message(f"Error during split: {e}")
