@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Feature 8: split parts now carry a track-number frame (`TRCK`, e.g. `2/5`) indicating their position among the generated parts; if the source file already has one, it is copied as-is and never overridden.
+
 ## 2026-09-22
 - Unified user settings into a single `settings.txt` (KEY=VALUE), replacing the split between `config.txt` and `preferences.json`; removed the stray committed `config.txt`.
 - Feature 4: added a "File names" selector (radio buttons): *Numbers* (`01.mp3`) or *File+Numbers* (`<source_stem>_01.mp3`); choice is persisted in `config.txt` (`FILENAME_FORMAT`).

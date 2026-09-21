@@ -12,7 +12,6 @@
 
 - Feature 11: instead of "01.mp3" or "album_01.mp3" it should be "part_01.mp3" and "album_part_01.mp3"
 
-- Feature 8: Add TRK tag (don't override it if already exists!)
 
 - Feature 10: Add the COMM tag for this text: "Original file split with Music Splitter by Alessandro Piccione."
   Frame:       COMM
