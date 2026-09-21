@@ -2,9 +2,6 @@
 
 ## Backlog
 
-- Bug: User rpeferences are splitted in 2 difefrent files: config.txt and preferences.json
-  Use "settings.txt" if a json format is not required.
-
 - Bug: UI is non-sense.
   - I click "Split File" that is on top and there is a settings for the name format below? The settings should go on top.
   - What is "Selected File"  for ? remove.
