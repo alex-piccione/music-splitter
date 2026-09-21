@@ -116,7 +116,8 @@ class MP3Splitter:
                     if original_tags:
                         for key, value in original_tags.items():
                             target_tags.add(value)
-                    # Label each part with its position unless the source already had a track number
+                    # Label each part with its position unless the source already had a track number.
+                    # Note: the frame class is named TRK but its ID3v2 code (and dict key) is 'TRCK'
                     if 'TRCK' not in target_tags:
                         target_tags.add(TRK(encoding=3, text=f"{i+1}/{num_segments}"))
                     target_tags.save()
