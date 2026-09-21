@@ -47,7 +47,7 @@ class TestMainWindow(unittest.TestCase):
         self.root.withdraw()
         self.split_calls = []
         self.close_called = False
-        self.update_file_label, self.log_message, self.get_filename_format = (
+        self.update_file_label, self.log_message, self.get_filename_format, self.get_part_length_s = (
             create_main_window(
                 self.root,
                 lambda: self.split_calls.append(1),
@@ -73,6 +73,19 @@ class TestMainWindow(unittest.TestCase):
     def test_window_title(self):
         self.assertEqual(self.root.title(), "Music Splitter")
 
+    def test_part_length_default(self):
+        self.assertEqual(self.get_part_length_s(), 600)
+
+    def test_part_length_custom_initial(self):
+        root = tk.Tk()
+        root.withdraw()
+        callbacks = create_main_window(
+            root, lambda: None, lambda: None, initial_part_length_s=10,
+        )
+        try:
+            self.assertEqual(callbacks[3](), 10)
+        finally:
+            root.destroy()
     def test_split_button_triggers_callback(self):
         button = next(b for b in self._buttons() if b.cget("text") == "Split File")
         button.invoke()
@@ -122,7 +135,7 @@ class TestMainWindow(unittest.TestCase):
         root2 = tk.Tk()
         root2.withdraw()
         try:
-            _, _, get_fmt = create_main_window(
+            _, _, get_fmt, _ = create_main_window(
                 root2, lambda: None, lambda: None, filename_format="file+numbers"
             )
             self.assertEqual(get_fmt(), "file+numbers")
