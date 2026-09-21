@@ -23,9 +23,9 @@ class TestMP3Splitter(unittest.TestCase):
 
     def test_split_success(self):
         """Verify splitting works and creates correct filenames."""
-        # sample.mp3 is 12 seconds. Split into 4 second segments -> 3 parts.
-        # We pass duration in minutes. 4 seconds = 4/60 minutes = 0.0666...
-        parts = self.splitter.split(self.fixture_path, self.output_dir, 4/60)
+        # sample.mp3 is ~12 seconds. Split into 5 second segments -> 3 parts.
+        # We pass duration in minutes. 5 seconds = 5/60 minutes.
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
         
         self.assertEqual(len(parts), 3)
         self.assertTrue(os.path.exists(os.path.join(self.output_dir, "01.mp3")))
@@ -60,7 +60,7 @@ class TestMP3Splitter(unittest.TestCase):
 
     def test_metadata_preservation(self):
         """Verify metadata is copied correctly."""
-        parts = self.splitter.split(self.fixture_path, self.output_dir, 4/60)
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
         first_part = parts[0]
         
         audio = MP3(first_part)
