@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-21
+- Fixed `alert()` crash (`TclError: bad window path name`): `transient(True)` now takes the parent window via optional `master` argument; callers in `main.py` pass `root`.
 - Replaced unmaintained `pydub` with direct FFmpeg stream-copy (`-c copy`) splitting: fixes `audioop` ModuleNotFoundError on Python ≥3.13 and SyntaxWarning noise; splitting is now lossless (no re-encode).
 - Removed `pydub` from requirements; FFmpeg is now used directly.
 - Made split test robust to MP3 duration estimation padding.
