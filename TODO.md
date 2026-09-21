@@ -3,6 +3,10 @@
 ## Backlog
 
 
+- Feature 1: When I click "Split file" it has to open the dialog on the last directory I used (apart from first app use obviously)
+
+
+
 - **[docs/01_id3_tag]** Create `ID3_tag.md` documenting the ID3v2 tags written by the app:
 
   | Code | Meaning                 | Value in test |
