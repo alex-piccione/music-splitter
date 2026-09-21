@@ -5,13 +5,13 @@ from tkinter import filedialog
 from ui import create_main_window, alert
 from libs.splitter import MP3Splitter
 
-STATE_FILE = ".music_splitter_state.json"
+PREFERENCES_FILE = "preferences.json"
 
 
-def load_last_dir(state_path=STATE_FILE):
+def load_last_dir():
     """Return the last directory used in the file dialog, or '' if unknown."""
     try:
-        with open(state_path) as f:
+        with open(PREFERENCES_FILE) as f:
             data = json.load(f)
     except (OSError, json.JSONDecodeError):
         return ""
@@ -19,9 +19,9 @@ def load_last_dir(state_path=STATE_FILE):
     return d if isinstance(d, str) and os.path.isdir(d) else ""
 
 
-def save_last_dir(dir_path, state_path=STATE_FILE):
+def save_last_dir(dir_path):
     try:
-        with open(state_path, "w") as f:
+        with open(PREFERENCES_FILE, "w") as f:
             json.dump({"last_dir": dir_path}, f)
     except OSError:
         pass
