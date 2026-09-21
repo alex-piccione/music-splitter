@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 
@@ -6,60 +7,41 @@ pad_xs = 5
 pad_xl = 20
 
 
-def alert(message, title="Alert", master=None):
-    # Create a new top-level window
-    alert_window = tk.Toplevel(master)
-    
-    # Set the window title and size
-    alert_window.title(title)
-    alert_window.geometry("300x150")
-    if master is not None:
-        alert_window.transient(master) # Make it appear on top of the main window
-    alert_window.grab_set()      # Make it modal
-    alert_window.update()
-        
-    # Create a Label widget to display the message
-    message_label = ttk.Label(alert_window, text=message, wraplength=250, justify="center")
-    message_label.pack(padx=pad, pady=pad, expand=True)
-    
-    # Add a "OK" button to close the window
-    ok_button = ttk.Button(alert_window, text="OK", command=alert_window.destroy)
-    ok_button.pack(side=tk.BOTTOM, anchor=tk.S, padx=pad, pady=pad)
-
-def create_main_window(root, split_file, close_app, filename_format="numbers", initial_part_length_m=10):
-    # Use ttk style
+def create_main_window(root, browse_file, split_file, filename_format="numbers", initial_part_length_m=10):
     style = ttk.Style()
-    
-    # Create the main window and set its properties
-    root.title("Music Splitter")
-    root.geometry("600x450")
 
-    # Main container frame
+    root.title("Music Splitter")
+    root.geometry("520x400")
+
     main_frame = ttk.Frame(root, padding="20")
     main_frame.pack(fill=tk.BOTH, expand=True)
 
-    # Header section
-    header_frame = ttk.Frame(main_frame)
-    header_frame.pack(fill=tk.X, pady=(0, 20))
-
     # Title label
-    title_label = ttk.Label(header_frame, text="Music Splitter", font=("Arial", 18, "bold"))
-    title_label.pack(side=tk.LEFT)
+    title_label = ttk.Label(main_frame, text="Music Splitter", font=("Arial", 16, "bold"))
+    title_label.pack(anchor=tk.W, pady=(0, pad))
 
-    # Action area (Split Button + Description)
-    action_frame = ttk.Frame(main_frame)
-    action_frame.pack(fill=tk.X, pady=10)
+    # Top message bar: fixed height so controls never move when a message appears
+    message_bar = ttk.Frame(main_frame, height=28)
+    message_bar.pack(fill=tk.X, pady=(0, pad))
+    message_bar.pack_propagate(False)
+    message_var = tk.StringVar(value="")
+    message_label = ttk.Label(message_bar, textvariable=message_var, anchor=tk.W)
+    message_label.pack(side=tk.LEFT, fill=tk.X)
 
-    split_button = ttk.Button(action_frame, text="Split File", command=split_file)
-    split_button.pack(side=tk.LEFT, padx=(0, 20))
+    # Browse row: button + selected file name
+    browse_frame = ttk.Frame(main_frame)
+    browse_frame.pack(fill=tk.X, pady=(0, pad))
 
-    description = "Split the selected audio file into multiple tracks."
-    description_label = ttk.Label(action_frame, text=description, wraplength=300)
-    description_label.pack(side=tk.LEFT)
+    browse_button = ttk.Button(browse_frame, text="Browse…", command=browse_file)
+    browse_button.pack(side=tk.LEFT)
+
+    file_var = tk.StringVar(value="No file selected")
+    file_label = ttk.Label(browse_frame, textvariable=file_var, foreground="gray")
+    file_label.pack(side=tk.LEFT, padx=(pad_xs * 2, 0))
 
     # File names format selector
     naming_frame = ttk.LabelFrame(main_frame, text="File names", padding="10")
-    naming_frame.pack(fill=tk.X, pady=10)
+    naming_frame.pack(fill=tk.X, pady=(0, pad))
 
     naming_var = tk.StringVar(value=filename_format)
     ttk.Radiobutton(
@@ -74,7 +56,7 @@ def create_main_window(root, split_file, close_app, filename_format="numbers", i
     # Part length selection (minutes: 5 / 10 / 15)
     part_len_var = tk.StringVar(value=str(initial_part_length_m))
     part_len_frame = ttk.LabelFrame(main_frame, text="Part length", padding="10")
-    part_len_frame.pack(fill=tk.X, pady=10)
+    part_len_frame.pack(fill=tk.X, pady=(0, pad))
 
     for minutes in ("5", "10", "15"):
         ttk.Radiobutton(
@@ -82,36 +64,34 @@ def create_main_window(root, split_file, close_app, filename_format="numbers", i
             variable=part_len_var, value=minutes,
         ).pack(side=tk.LEFT, padx=(0, pad_xl))
 
-    # --- NEW: File Selection Display ---
-    file_display_frame = ttk.LabelFrame(main_frame, text="Selected File", padding="10")
-    file_display_frame.pack(fill=tk.X, pady=10)
+    # Big SPLIT button, disabled until a source file is selected
+    style.configure("Big.TButton", font=("Arial", 14, "bold"))
+    split_button = ttk.Button(
+        main_frame, text="SPLIT", style="Big.TButton",
+        state=tk.DISABLED, command=split_file,
+    )
+    split_button.pack(fill=tk.X, pady=(pad, 0))
 
-    file_path_label = ttk.Label(file_display_frame, text="No file selected", font=("Arial", 9, "italic"))
-    file_path_label.pack(fill=tk.X)
-
-    # --- NEW: Status/Log Area ---
-    log_frame = ttk.LabelFrame(main_frame, text="Status Log", padding="10")
-    log_frame.pack(fill=tk.BOTH, expand=True, pady=10)
-
-    log_text = tk.Text(log_frame, height=6, state='disabled', font=("Consolas", 9))
-    log_text.pack(fill=tk.BOTH, expand=True)
-
-    # Bottom area (Close button)
-    bottom_frame = ttk.Frame(main_frame)
-    bottom_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(20, 5))
-
-    close_button = ttk.Button(bottom_frame, text="Close", command=close_app)
-    close_button.pack(side=tk.RIGHT, padx=5)
-
-    # Helper functions to interact with the UI from outside
     def update_file_label(path):
-        file_path_label.config(text=path if path else "No file selected")
+        if path:
+            file_var.set(os.path.basename(path))
+            file_label.config(foreground="")
+        else:
+            file_var.set("No file selected")
+            file_label.config(foreground="gray")
 
-    def log_message(msg):
-        log_text.config(state='normal')
-        log_text.insert(tk.END, f"> {msg}\n")
-        log_text.see(tk.END)
-        log_text.config(state='disabled')
+    def set_message(msg, is_error=False):
+        message_var.set(msg)
+        message_label.config(foreground="red" if is_error else "")
+
+    def set_enabled(enabled):
+        state = tk.NORMAL if enabled else tk.DISABLED
+        browse_button.config(state=state)
+        split_button.config(state=state)
+        for frame in (naming_frame, part_len_frame):
+            for child in frame.winfo_children():
+                if isinstance(child, ttk.Radiobutton):
+                    child.config(state=state)
 
     def get_filename_format():
         return naming_var.get()
@@ -119,4 +99,4 @@ def create_main_window(root, split_file, close_app, filename_format="numbers", i
     def get_part_length_m():
         return int(part_len_var.get())
 
-    return update_file_label, log_message, get_filename_format, get_part_length_m
+    return update_file_label, set_message, set_enabled, get_filename_format, get_part_length_m

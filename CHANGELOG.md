@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+- Reworked UI layout: fixed-height message bar on top, Browse row (button + selected file), then *File names* and *Part length* settings, and a big **SPLIT** button disabled until a source file is chosen.
+- Removed the "Selected File" frame, the Status Log widget, the Close button and all alert popups; status and errors are shown in the top message bar (errors in red).
+- Splitting now runs in a background thread with the UI frozen while running; result reported as "Done: N parts created".
+- Logging kept internally (timestamped in-memory list); will later become a log file shown via a button on failure.
+
 ## 2026-09-22
 - Unified user settings into a single `settings.txt` (KEY=VALUE), replacing the split between `config.txt` and `preferences.json`; removed the stray committed `config.txt`.
 - Feature 4: added a "File names" selector (radio buttons): *Numbers* (`01.mp3`) or *File+Numbers* (`<source_stem>_01.mp3`); choice is persisted in `config.txt` (`FILENAME_FORMAT`).
