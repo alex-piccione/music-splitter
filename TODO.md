@@ -12,8 +12,6 @@
 
 - Feature 11: instead of "01.mp3" or "album_01.mp3" it should be "part_01.mp3" and "album_part_01.mp3"
 
-- Feature 5: the user should be able to decide the parts length, default: 10 minutes. The selection should obviously be persisted as a user preference.
-
 - Feature 8: Add TRK tag (don't override it if already exists!)
 
 - Feature 10: Add the COMM tag for this text: "Original file split with Music Splitter by Alessandro Piccione."
