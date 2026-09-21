@@ -9,6 +9,7 @@
 
 - Feature 4: Two option buttons should allow to select the file name format. "File names"  (a) Numbers ("01.mp3")  (b) File+Numbers ("DJ-AAA 2028-12-31 full_session_01.mp3")
 
+- Feature 5: the user should be able to decide the parts length, default: 10 seconds. The selection should obviously be persisted as a user preference.
 
 - **[docs/01_id3_tag]** Create `ID3_tag.md` documenting the ID3v2 tags written by the app:
 
