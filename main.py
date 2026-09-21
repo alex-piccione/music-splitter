@@ -38,7 +38,7 @@ class MusicSplitterApp:
 
     def select_file(self, extension):
         if not extension:
-            alert("Please, provide an extension.", "Select a file")
+            alert("Please, provide an extension.", "Select a file", master=self.root)
             self.log_message("Error: No extension provided.")
             return None
         
@@ -66,7 +66,7 @@ class MusicSplitterApp:
             return
 
         self.log_message(f"Starting split process for: {os.path.basename(mp3_file)}")
-        alert(f"Processing: {os.path.basename(mp3_file)}", "Process Started")
+        alert(f"Processing: {os.path.basename(mp3_file)}", "Process Started", master=self.root)
         
         try:
             splitter = MP3Splitter()
@@ -75,7 +75,7 @@ class MusicSplitterApp:
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:
             self.log_message(f"Error during split: {e}")
-            alert(str(e), "Split Error")
+            alert(str(e), "Split Error", master=self.root)
 
     def close_app(self):
         self.root.destroy()

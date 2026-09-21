@@ -6,14 +6,15 @@ pad_xs = 5
 pad_xl = 20
 
 
-def alert(message, title="Alert"):
+def alert(message, title="Alert", master=None):
     # Create a new top-level window
-    alert_window = tk.Toplevel()
+    alert_window = tk.Toplevel(master)
     
     # Set the window title and size
     alert_window.title(title)
     alert_window.geometry("300x150")
-    alert_window.transient(True) # Make it appear on top of the main window
+    if master is not None:
+        alert_window.transient(master) # Make it appear on top of the main window
     alert_window.grab_set()      # Make it modal
     alert_window.update()
         
