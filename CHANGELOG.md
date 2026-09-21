@@ -4,6 +4,8 @@
 - Feature 1: "Split File" dialog now opens in the last directory used, persisted across app runs via `preferences.json`.
 
 ## 2026-09-21
+- Split output now goes into a folder named after the source file (e.g., `My Mix.mp3` → `My Mix/01.mp3`, …), created next to the source file.
+- Removed the obsolete `OUTPUT_FOLDER` setting from `config.txt`.
 - Replaced unmaintained `pydub` with direct FFmpeg stream-copy (`-c copy`) splitting: fixes `audioop` ModuleNotFoundError on Python ≥3.13 and SyntaxWarning noise; splitting is now lossless (no re-encode).
 - Removed `pydub` from requirements; FFmpeg is now used directly.
 - Made split test robust to MP3 duration estimation padding.
