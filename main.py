@@ -1,13 +1,37 @@
+import json
 import os
 import tkinter as tk
 from tkinter import filedialog
 from ui import create_main_window, alert
 from libs.splitter import MP3Splitter
 
+STATE_FILE = ".music_splitter_state.json"
+
+
+def load_last_dir(state_path=STATE_FILE):
+    """Return the last directory used in the file dialog, or '' if unknown."""
+    try:
+        with open(state_path) as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return ""
+    d = data.get("last_dir") if isinstance(data, dict) else None
+    return d if isinstance(d, str) and os.path.isdir(d) else ""
+
+
+def save_last_dir(dir_path, state_path=STATE_FILE):
+    try:
+        with open(state_path, "w") as f:
+            json.dump({"last_dir": dir_path}, f)
+    except OSError:
+        pass
+
+
 class MusicSplitterApp:
     def __init__(self):
         self.root = tk.Tk()
         self.last_selected_file = ""
+        self.last_dir = load_last_dir()
         
         # Load settings from config.txt
         self.config = self._read_config()
@@ -42,7 +66,7 @@ class MusicSplitterApp:
             self.log_message("Error: No extension provided.")
             return None
         
-        initial_dir = os.path.dirname(self.last_selected_file) if self.last_selected_file else "."
+        initial_dir = self.last_dir or "."
         file_types = [("MP3", ".mp3")] if extension == "mp3" else None
         
         filename = filedialog.askopenfilename(
@@ -53,6 +77,8 @@ class MusicSplitterApp:
 
         if filename:
             self.last_selected_file = filename
+            self.last_dir = os.path.dirname(filename)
+            save_last_dir(self.last_dir)
             self.update_file_label(filename)
             self.log_message(f"File selected: {os.path.basename(filename)}")
         else:
