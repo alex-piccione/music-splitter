@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-22
+- Feature 4: added a "File names" selector (radio buttons): *Numbers* (`01.mp3`) or *File+Numbers* (`<source_stem>_01.mp3`); choice is persisted in `config.txt` (`FILENAME_FORMAT`).
 - Feature 1: "Split File" dialog now opens in the last directory used, persisted across app runs via `preferences.json`.
 
 ## 2026-09-21

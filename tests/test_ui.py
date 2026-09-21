@@ -47,10 +47,12 @@ class TestMainWindow(unittest.TestCase):
         self.root.withdraw()
         self.split_calls = []
         self.close_called = False
-        self.update_file_label, self.log_message = create_main_window(
-            self.root,
-            lambda: self.split_calls.append(1),
-            lambda: setattr(self, "close_called", True),
+        self.update_file_label, self.log_message, self.get_filename_format = (
+            create_main_window(
+                self.root,
+                lambda: self.split_calls.append(1),
+                lambda: setattr(self, "close_called", True),
+            )
         )
 
     def tearDown(self):
@@ -92,6 +94,40 @@ class TestMainWindow(unittest.TestCase):
                 text += str(w.cget("text"))
             stack.extend(w.winfo_children())
         self.assertIn("/tmp/test.mp3", text)
+
+    @staticmethod
+    def _collect(parent, cls, out):
+        for w in parent.winfo_children():
+            if isinstance(w, cls):
+                out.append(w)
+            TestMainWindow._collect(w, cls, out)
+        return out
+
+    def _radios(self):
+        return self._collect(self.root, ttk.Radiobutton, [])
+
+    def test_naming_radios_default_to_numbers(self):
+        radios = self._radios()
+        self.assertEqual(len(radios), 2)
+        values = {str(r.cget("value")) for r in radios}
+        self.assertEqual(values, {"numbers", "file+numbers"})
+        self.assertEqual(self.get_filename_format(), "numbers")
+
+    def test_naming_selector_reports_selection(self):
+        target = next(r for r in self._radios() if str(r.cget("value")) == "file+numbers")
+        target.invoke()
+        self.assertEqual(self.get_filename_format(), "file+numbers")
+
+    def test_create_main_window_accepts_persisted_format(self):
+        root2 = tk.Tk()
+        root2.withdraw()
+        try:
+            _, _, get_fmt = create_main_window(
+                root2, lambda: None, lambda: None, filename_format="file+numbers"
+            )
+            self.assertEqual(get_fmt(), "file+numbers")
+        finally:
+            root2.destroy()
 
     def test_log_message_appends_to_status_log(self):
         self.log_message("hello world")

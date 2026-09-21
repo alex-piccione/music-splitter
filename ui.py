@@ -26,7 +26,7 @@ def alert(message, title="Alert", master=None):
     ok_button = ttk.Button(alert_window, text="OK", command=alert_window.destroy)
     ok_button.pack(side=tk.BOTTOM, anchor=tk.S, padx=pad, pady=pad)
 
-def create_main_window(root, split_file, close_app):
+def create_main_window(root, split_file, close_app, filename_format="numbers"):
     # Use ttk style
     style = ttk.Style()
     
@@ -56,6 +56,20 @@ def create_main_window(root, split_file, close_app):
     description = "Split the selected audio file into multiple tracks."
     description_label = ttk.Label(action_frame, text=description, wraplength=300)
     description_label.pack(side=tk.LEFT)
+
+    # File names format selector
+    naming_frame = ttk.LabelFrame(main_frame, text="File names", padding="10")
+    naming_frame.pack(fill=tk.X, pady=10)
+
+    naming_var = tk.StringVar(value=filename_format)
+    ttk.Radiobutton(
+        naming_frame, text="Numbers (\u201c01.mp3\u201d)",
+        variable=naming_var, value="numbers",
+    ).pack(side=tk.LEFT, padx=(0, pad_xl))
+    ttk.Radiobutton(
+        naming_frame, text="File+Numbers (\u201cDJ-AAA_01.mp3\u201d)",
+        variable=naming_var, value="file+numbers",
+    ).pack(side=tk.LEFT)
 
     # --- NEW: File Selection Display ---
     file_display_frame = ttk.LabelFrame(main_frame, text="Selected File", padding="10")
@@ -88,4 +102,7 @@ def create_main_window(root, split_file, close_app):
         log_text.see(tk.END)
         log_text.config(state='disabled')
 
-    return update_file_label, log_message
+    def get_filename_format():
+        return naming_var.get()
+
+    return update_file_label, log_message, get_filename_format

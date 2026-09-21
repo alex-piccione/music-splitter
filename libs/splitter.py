@@ -31,7 +31,11 @@ class MP3Splitter:
             )
         return path
 
-    def split(self, input_path: str, output_folder: str, segment_minutes: float) -> list[str]:
+    NAMING_NUMBERS = "numbers"
+    NAMING_FILE_PLUS_NUMBERS = "file+numbers"
+
+    def split(self, input_path: str, output_folder: str, segment_minutes: float,
+              naming: str = NAMING_NUMBERS) -> list[str]:
         """
         Splits an MP3 file into multiple parts of specified duration and copies metadata.
 
@@ -39,6 +43,8 @@ class MP3Splitter:
             input_path (str): Path to the source MP3 file.
             output_folder (str): Directory where the parts will be saved.
             segment_minutes (float): Duration of each segment in minutes.
+            naming (str): Filename style: "numbers" ("01.mp3") or
+                "file+numbers" ("<source_stem>_01.mp3").
 
         Returns:
             list[str]: A list of paths to the created MP3 segments.
@@ -56,6 +62,11 @@ class MP3Splitter:
 
         if segment_minutes <= 0:
             raise ValueError("Segment duration must be greater than zero.")
+
+        if naming not in (self.NAMING_NUMBERS, self.NAMING_FILE_PLUS_NUMBERS):
+            raise ValueError(f"Unknown filename format: {naming}")
+
+        stem = os.path.splitext(os.path.basename(input_path))[0]
 
         # Ensure output directory exists
         if not os.path.exists(output_folder):
@@ -80,7 +91,11 @@ class MP3Splitter:
                 start_s = i * segment_s
                 length_s = min(segment_s, duration_s - start_s)
 
-                filename = f"{str(i + 1).zfill(2)}.mp3"
+                num = str(i + 1).zfill(2)
+                if naming == self.NAMING_FILE_PLUS_NUMBERS:
+                    filename = f"{stem}_{num}.mp3"
+                else:
+                    filename = f"{num}.mp3"
                 output_path = os.path.join(output_folder, filename)
 
                 cmd = [
