@@ -29,11 +29,11 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(settings["FILENAME_FORMAT"], "numbers")
 
     def test_saved_value_survives_reload(self):
-        save_setting("SPLIT_FIXED_DURATION_MINUTES", "15.0")
+        save_setting("PART_LENGTH_MINUTES", "15.0")
         self.assertTrue(os.path.isfile(main.SETTINGS_FILE))
         with open(main.SETTINGS_FILE) as f:
             content = f.read()
-        self.assertIn("SPLIT_FIXED_DURATION_MINUTES=15.0\n", content)
+        self.assertIn("PART_LENGTH_MINUTES=15.0\n", content)
 
     def test_comments_and_blank_lines_ignored(self):
         with open(main.SETTINGS_FILE, "w") as f:
