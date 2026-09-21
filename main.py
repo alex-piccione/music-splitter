@@ -62,7 +62,10 @@ class MusicSplitterApp:
         return config
 
     @staticmethod
-    def _write_config(config):
+    def _save_config_key(key, value):
+        """Persist one setting, preserving any other lines currently in config.txt."""
+        config = MusicSplitterApp._read_config()
+        config[key] = value
         try:
             with open("config.txt", "w") as f:
                 for k, v in config.items():
@@ -107,13 +110,14 @@ class MusicSplitterApp:
         naming = self.get_filename_format()
         if naming != self.filename_format:
             self.filename_format = naming
-            self.config["FILENAME_FORMAT"] = naming
-            self._write_config(self.config)
+            self._save_config_key("FILENAME_FORMAT", naming)
 
         try:
             splitter = MP3Splitter()
             output_folder = MP3Splitter.default_output_folder(mp3_file)
-            created_files = splitter.split(mp3_file, output_folder, self.segment_minutes, naming)
+            created_files = splitter.split(
+                mp3_file, output_folder, self.segment_minutes, naming=naming,
+            )
             self.log_message(f"Split complete: {len(created_files)} segments created in {output_folder}")
         except Exception as e:
             self.log_message(f"Error during split: {e}")
