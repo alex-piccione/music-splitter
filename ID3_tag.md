@@ -30,6 +30,20 @@ Unlike most frames, a comment carries two extra properties alongside its text:
 
 Because these properties are part of the frame's identity, a single file may contain **multiple COMM frames** (different languages or descriptions). All of them are preserved on each segment during the copy.
 
+### Provenance comment
+
+Every generated segment additionally receives a provenance COMM frame marking its origin:
+
+| Property    | Value                                                        |
+|-------------|--------------------------------------------------------------|
+| Language    | `eng`                                                        |
+| Description | `Splitter provenance`                                        |
+| Text        | *Original file split with Music Splitter by Alessandro Piccione.* |
+
+All three values are configured in [`ui-text/english.yml`](./ui-text/english.yml) under the `comm:` section (`language`, `description`, `text`). If that file is missing, unparseable, or lacks a valid `comm` section, a built-in default identical to it is used and a warning is printed.
+
+Duplicate detection uses the frame's **identity** — the language + description pair — not the text content. If the source already carries a COMM frame with the same language and description, it is copied as-is (even if its text differs) and no second frame is added.
+
 ## Copy behaviour
 
 - All ID3v2 frames present in the source file are copied **verbatim** to each segment — not only the primary tags listed above. Any extra frames (e.g. genre, cover art) survive the split unchanged.

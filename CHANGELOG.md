@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2026-09-22
+- Feature 10: every split part now carries a provenance COMM tag (`eng`, description "Splitter provenance"). The full frame (language, description, text) is configurable via the `comm:` section of `ui-text/english.yml`; a built-in fallback with a warning covers missing/broken configuration. Duplicate detection keys on the frame identity (language + description): a matching frame from the source is preserved verbatim, even with different text.
+- Fixed invalid YAML header in `ui-text/english.yml` (`|>` → `>`).
+- Hardened provenance loading: targeted error handling (OSError / YAMLError / malformed shape) instead of a broad silent catch; tests derive expectations from the repo YAML and verify loading against distinct temporary files.
 - Feature 8: split parts now carry a track-number frame (`TRCK`, e.g. `2/5`) indicating their position among the generated parts; if the source file already has one, it is copied as-is and never overridden.
 - Reworked UI layout: fixed-height message bar on top, Browse row (button + selected file), then *File names* and *Part length* settings, and a big **SPLIT** button disabled until a source file is chosen.
 - Removed the "Selected File" frame, the Status Log widget, the Close button and all alert popups; status and errors are shown in the top message bar (errors in red).

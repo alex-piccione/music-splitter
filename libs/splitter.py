@@ -2,8 +2,45 @@ import os
 import math
 import shutil
 import subprocess
+from pathlib import Path
+import yaml
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, ID3NoHeaderError, TRK
+from mutagen.id3 import ID3, ID3NoHeaderError, COMM, TRK
+
+UI_TEXT_FILE = Path(__file__).resolve().parent.parent / "ui-text" / "english.yml"
+# Built-in fallback used when ui-text/english.yml is missing, unparseable or incomplete.
+DEFAULT_PROVENANCE = {
+    "lang": "eng",
+    "description": "Splitter provenance",
+    "text": "Original file split with Music Splitter by Alessandro Piccione.",
+}
+
+
+def load_provenance(path: Path = UI_TEXT_FILE) -> dict:
+    """Read the provenance COMM frame values (lang/description/text) from english.yml.
+
+    Falls back to DEFAULT_PROVENANCE with a warning when the resource cannot be read,
+    so a broken configuration never prevents splitting or tagging.
+    """
+    try:
+        raw = Path(path).read_text(encoding="utf-8")
+    except OSError as e:
+        print(f"Warning: could not read {path} ({e}); using built-in provenance text.")
+        return dict(DEFAULT_PROVENANCE)
+    try:
+        data = yaml.safe_load(raw) or {}
+    except yaml.YAMLError as e:
+        print(f"Warning: invalid YAML in {path}: {e}; using built-in provenance text.")
+        return dict(DEFAULT_PROVENANCE)
+    comm = data.get("comm")
+    if not isinstance(comm, dict) or not isinstance(comm.get("text"), str) or not comm["text"].strip():
+        print(f"Warning: missing or invalid 'comm' section in {path}; using built-in provenance text.")
+        return dict(DEFAULT_PROVENANCE)
+    return {
+        "lang": str(comm.get("language") or DEFAULT_PROVENANCE["lang"]),
+        "description": str(comm.get("description") or DEFAULT_PROVENANCE["description"]),
+        "text": comm["text"].strip(),
+    }
 
 
 class MP3Splitter:
@@ -12,8 +49,9 @@ class MP3Splitter:
     Uses FFmpeg stream-copy (-c copy): lossless and fast, no re-encoding.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, provenance: dict | None = None):
+        # A full {'lang', 'description', 'text'} mapping overrides the configured values.
+        self.provenance = provenance if provenance is not None else load_provenance()
 
     @staticmethod
     def default_output_folder(input_path: str) -> str:
@@ -120,6 +158,19 @@ class MP3Splitter:
                     # Note: the frame class is named TRK but its ID3v2 code (and dict key) is 'TRCK'
                     if 'TRCK' not in target_tags:
                         target_tags.add(TRK(encoding=3, text=f"{i+1}/{num_segments}"))
+                    # Stamp every part with its origin. A COMM frame's identity is its
+                    # language + description pair, so a same-identity frame copied from the
+                    # source is kept as-is (even with different text) instead of duplicated.
+                    prov = self.provenance
+                    has_same_comm = any(
+                        f.lang == prov["lang"] and f.desc == prov["description"]
+                        for f in target_tags.getall('COMM')
+                    )
+                    if not has_same_comm:
+                        target_tags.add(COMM(
+                            encoding=3, lang=prov["lang"],
+                            desc=prov["description"], text=[prov["text"]],
+                        ))
                     target_tags.save()
                 except Exception as e:
                     print(f"Warning: Could not copy metadata to {filename}: {e}")
