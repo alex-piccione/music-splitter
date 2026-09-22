@@ -2,8 +2,6 @@
 
 ## Backlog
 
-- Feature 11: instead of "01.mp3" or "album_01.mp3" it should be "part_01.mp3" and "album_part_01.mp3"
-
 
 - Feature 7: The internal log will be replaced by a log file, plus a button that shows it when an operation fails.
 
