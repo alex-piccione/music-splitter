@@ -45,11 +45,11 @@ def create_main_window(root, browse_file, split_file, filename_format="numbers",
 
     naming_var = tk.StringVar(value=filename_format)
     ttk.Radiobutton(
-        naming_frame, text="Numbers (\u201c01.mp3\u201d)",
+        naming_frame, text="Numbers (\u201cpart_01.mp3\u201d)",
         variable=naming_var, value="numbers",
     ).pack(side=tk.LEFT, padx=(0, pad_xl))
     ttk.Radiobutton(
-        naming_frame, text="File+Numbers (\u201cDJ-AAA_01.mp3\u201d)",
+        naming_frame, text="File+Numbers (\u201cDJ-AAA_part_01.mp3\u201d)",
         variable=naming_var, value="file+numbers",
     ).pack(side=tk.LEFT)
 

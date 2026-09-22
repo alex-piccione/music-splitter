@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-22
+- Feature 11: split parts are now named with a `part_` prefix — *Numbers* produces `part_01.mp3`, *File+Numbers* produces `<source_stem>_part_01.mp3`.
 - Feature 10: every split part now carries a provenance COMM tag (`eng`, description "Splitter provenance"). The full frame (language, description, text) is configurable via the `comm:` section of `ui-text/english.yml`; a built-in fallback with a warning covers missing/broken configuration. Duplicate detection keys on the frame identity (language + description): a matching frame from the source is preserved verbatim, even with different text.
 - Fixed invalid YAML header in `ui-text/english.yml` (`|>` → `>`).
 - Hardened provenance loading: targeted error handling (OSError / YAMLError / malformed shape) instead of a broad silent catch; tests derive expectations from the repo YAML and verify loading against distinct temporary files.

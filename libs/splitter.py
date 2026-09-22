@@ -81,8 +81,8 @@ class MP3Splitter:
             input_path (str): Path to the source MP3 file.
             output_folder (str): Directory where the parts will be saved.
             segment_minutes (float): Duration of each segment in minutes.
-            naming (str): Filename style: "numbers" ("01.mp3") or
-                "file+numbers" ("<source_stem>_01.mp3").
+            naming (str): Filename style: "numbers" ("part_01.mp3") or
+                "file+numbers" ("<source_stem>_part_01.mp3").
 
         Returns:
             list[str]: A list of paths to the created MP3 segments.
@@ -129,11 +129,11 @@ class MP3Splitter:
                 start_s = i * segment_s
                 length_s = min(segment_s, duration_s - start_s)
 
-                num = str(i + 1).zfill(2)
+                part = f"part_{str(i + 1).zfill(2)}"
                 if naming == self.NAMING_FILE_PLUS_NUMBERS:
-                    filename = f"{stem}_{num}.mp3"
+                    filename = f"{stem}_{part}.mp3"
                 else:
-                    filename = f"{num}.mp3"
+                    filename = f"{part}.mp3"
                 output_path = os.path.join(output_folder, filename)
 
                 cmd = [
