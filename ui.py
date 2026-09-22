@@ -7,7 +7,8 @@ pad_xs = 5
 pad_xl = 20
 
 
-def create_main_window(root, browse_file, split_file, filename_format="numbers", initial_part_length_m=10):
+def create_main_window(root, browse_file, split_file, filename_format="numbers",
+                       initial_part_length_m=10, log_file=None):
     style = ttk.Style()
 
     root.title("Music Splitter")
@@ -72,6 +73,34 @@ def create_main_window(root, browse_file, split_file, filename_format="numbers",
     )
     split_button.pack(fill=tk.X, pady=(pad, 0))
 
+    # Log viewer button: hidden until an operation fails
+    def show_log_viewer():
+        win = tk.Toplevel(root)
+        win.title("Music Splitter Log")
+        win.geometry("560x320")
+        text = tk.Text(win, wrap=tk.NONE)
+        scrollbar = ttk.Scrollbar(win, orient=tk.VERTICAL, command=text.yview)
+        text.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        text.pack(fill=tk.BOTH, expand=True)
+        content = ""
+        if log_file:
+            try:
+                with open(log_file, encoding="utf-8") as f:
+                    content = f.read()
+            except OSError:
+                pass
+        text.insert(tk.END, content or "(no log available yet)")
+        text.config(state=tk.DISABLED)
+
+    log_button = ttk.Button(main_frame, text="Show log…", command=show_log_viewer)
+
+    def set_log_button_visible(visible):
+        if visible:
+            log_button.pack(fill=tk.X, pady=(pad, 0))
+        else:
+            log_button.pack_forget()
+
     def update_file_label(path):
         if path:
             file_var.set(os.path.basename(path))
@@ -99,4 +128,5 @@ def create_main_window(root, browse_file, split_file, filename_format="numbers",
     def get_part_length_m():
         return int(part_len_var.get())
 
-    return update_file_label, set_message, set_enabled, get_filename_format, get_part_length_m
+    return (update_file_label, set_message, set_enabled,
+            get_filename_format, get_part_length_m, set_log_button_visible)
