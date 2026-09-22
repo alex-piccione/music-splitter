@@ -2,8 +2,27 @@ import os
 import math
 import shutil
 import subprocess
+from pathlib import Path
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, ID3NoHeaderError, TRK
+from mutagen.id3 import ID3, ID3NoHeaderError, COMM, TRK
+
+UI_TEXT_FILE = Path(__file__).resolve().parent.parent / "ui-text" / "english.yml"
+DEFAULT_PROVENANCE_TEXT = "Original file split with Music Splitter by Alessandro Piccione."
+PROVENANCE_LANG = "eng"
+PROVENANCE_DESC = "Splitter provenance"
+
+
+def load_provenance_text(path: Path = UI_TEXT_FILE) -> str:
+    """Read the provenance comment from ui-text/english.yml, falling back to a built-in default."""
+    try:
+        import yaml
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+        text = data.get("comm provenance text")
+        if isinstance(text, str) and text.strip():
+            return text.strip()
+    except Exception:
+        pass
+    return DEFAULT_PROVENANCE_TEXT
 
 
 class MP3Splitter:
@@ -12,8 +31,8 @@ class MP3Splitter:
     Uses FFmpeg stream-copy (-c copy): lossless and fast, no re-encoding.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, provenance_text: str | None = None):
+        self.provenance_text = provenance_text if provenance_text is not None else load_provenance_text()
 
     @staticmethod
     def default_output_folder(input_path: str) -> str:
@@ -120,6 +139,16 @@ class MP3Splitter:
                     # Note: the frame class is named TRK but its ID3v2 code (and dict key) is 'TRCK'
                     if 'TRCK' not in target_tags:
                         target_tags.add(TRK(encoding=3, text=f"{i+1}/{num_segments}"))
+                    # Stamp every part with its origin; skip if an identical frame was already copied from the source.
+                    has_same_comm = any(
+                        f.lang == PROVENANCE_LANG and f.desc == PROVENANCE_DESC
+                        for f in target_tags.getall('COMM')
+                    )
+                    if not has_same_comm:
+                        target_tags.add(COMM(
+                            encoding=3, lang=PROVENANCE_LANG,
+                            desc=PROVENANCE_DESC, text=[self.provenance_text],
+                        ))
                     target_tags.save()
                 except Exception as e:
                     print(f"Warning: Could not copy metadata to {filename}: {e}")
