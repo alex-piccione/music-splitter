@@ -2,9 +2,15 @@ import unittest
 import os
 import shutil
 import tempfile
-from libs.splitter import MP3Splitter
+from libs.splitter import (
+    MP3Splitter,
+    DEFAULT_PROVENANCE_TEXT,
+    PROVENANCE_DESC,
+    PROVENANCE_LANG,
+    UI_TEXT_FILE,
+)
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, TRK
+from mutagen.id3 import COMM, ID3, TRK
 
 class TestMP3Splitter(unittest.TestCase):
     @classmethod
@@ -137,6 +143,68 @@ class TestMP3Splitter(unittest.TestCase):
             finally:
                 if os.path.exists(out_dir):
                     shutil.rmtree(out_dir)
+
+class TestProvenanceComm(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.fixture_path = 'tests/fixtures/sample.mp3'
+        cls.output_dir = 'tests/output_test_comm'
+        cls.splitter = MP3Splitter()
+
+    def setUp(self):
+        if os.path.exists(self.output_dir):
+            shutil.rmtree(self.output_dir)
+        os.makedirs(self.output_dir)
+
+    def tearDown(self):
+        if os.path.exists(self.output_dir):
+            shutil.rmtree(self.output_dir)
+
+    def test_provenance_text_loaded_from_yml(self):
+        """The provenance sentence lives in ui-text/english.yml and is loaded from there."""
+        self.assertTrue(UI_TEXT_FILE.is_file())
+        splitter = MP3Splitter()
+        self.assertEqual(splitter.provenance_text, DEFAULT_PROVENANCE_TEXT)
+
+    def test_provenance_comm_added_to_every_part(self):
+        """Each part carries a COMM frame (eng / Splitter provenance) with the yml text."""
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
+        for part in parts:
+            audio = MP3(part)
+            frames = [f for f in audio.tags.getall('COMM')
+                      if f.lang == PROVENANCE_LANG and f.desc == PROVENANCE_DESC]
+            self.assertEqual(len(frames), 1)
+            self.assertEqual(list(frames[0].text), [self.splitter.provenance_text])
+
+    def test_provenance_not_duplicated_when_source_has_same_frame(self):
+        """A source already carrying an identical COMM frame must not be duplicated."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "with_comm.mp3")
+            shutil.copyfile(self.fixture_path, src)
+            audio = MP3(src)
+            audio.tags.add(COMM(encoding=3, lang="eng", desc="Splitter provenance",
+                                text=[DEFAULT_PROVENANCE_TEXT]))
+            audio.save()
+            out_dir = os.path.join(tmp, "out")
+            try:
+                parts = self.splitter.split(src, out_dir, 5/60)
+                for part in parts:
+                    seg = MP3(part)
+                    frames = [f for f in seg.tags.getall('COMM')
+                              if f.lang == PROVENANCE_LANG and f.desc == PROVENANCE_DESC]
+                    self.assertEqual(len(frames), 1)
+            finally:
+                if os.path.exists(out_dir):
+                    shutil.rmtree(out_dir)
+
+    def test_custom_provenance_text(self):
+        """An explicit provenance text overrides the yml value."""
+        splitter = MP3Splitter(provenance_text="custom origin note")
+        parts = splitter.split(self.fixture_path, self.output_dir, 5/60)
+        audio = MP3(parts[0])
+        frames = [f for f in audio.tags.getall('COMM')
+                  if f.lang == PROVENANCE_LANG and f.desc == PROVENANCE_DESC]
+        self.assertEqual(list(frames[0].text), ["custom origin note"])
 
 if __name__ == '__main__':
     unittest.main()
