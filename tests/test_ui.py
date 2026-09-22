@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 import tkinter as tk
 from tkinter import ttk
@@ -12,7 +14,8 @@ class TestMainWindow(unittest.TestCase):
         self.browse_calls = []
         self.split_calls = []
         (self.update_file_label, self.set_message, self.set_enabled,
-         self.get_filename_format, self.get_part_length_m) = create_main_window(
+         self.get_filename_format, self.get_part_length_m,
+         self.set_log_button_visible) = create_main_window(
             self.root,
             lambda: self.browse_calls.append(1),
             lambda: self.split_calls.append(1),
@@ -108,11 +111,51 @@ class TestMainWindow(unittest.TestCase):
         target.invoke()
         self.assertEqual(self.get_filename_format(), "file+numbers")
 
+    def _log_button(self):
+        return next(b for b in self._buttons() if "Show log" in str(b.cget("text")))
+
+    def test_log_button_hidden_initially(self):
+        # The button exists but must not be packed until an operation fails.
+        log_btn = self._log_button()
+        self.assertEqual(log_btn.winfo_manager(), "")
+
+    def test_log_button_shown_on_request(self):
+        self.set_log_button_visible(True)
+        self.root.update_idletasks()
+        log_btn = self._log_button()
+        self.assertNotEqual(log_btn.winfo_manager(), "")
+        self.set_log_button_visible(False)
+        self.root.update_idletasks()
+        self.assertEqual(log_btn.winfo_manager(), "")
+
+    def test_log_viewer_shows_log_file_content(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".log", delete=False) as f:
+            f.write("[2026-09-22T10:00:00] INFO Starting split process\n"
+                    "[2026-09-22T10:00:05] ERROR Error during split: boom\n")
+            log_path = f.name
+        self.addCleanup(os.unlink, log_path)
+        root2 = tk.Tk()
+        root2.withdraw()
+        try:
+            create_main_window(root2, lambda: None, lambda: None, log_file=log_path)
+            btn = next(b for b in TestMainWindow._collect(root2, ttk.Button, [])
+                       if "Show log" in str(b.cget("text")))
+            btn.invoke()
+            toplevels = [w for w in root2.winfo_children() if isinstance(w, tk.Toplevel)]
+            self.assertEqual(len(toplevels), 1)
+            texts = TestMainWindow._collect(toplevels[0], tk.Text, [])
+            self.assertEqual(len(texts), 1)
+            content = texts[0].get("1.0", tk.END)
+            self.assertIn("ERROR Error during split: boom", content)
+            self.assertIn("INFO Starting split process", content)
+        finally:
+            root2.destroy()
+
     def test_create_main_window_accepts_persisted_values(self):
         root2 = tk.Tk()
         root2.withdraw()
         try:
-            _, _, _, get_fmt, get_len = create_main_window(
+            _, _, _, get_fmt, get_len, _ = create_main_window(
                 root2, lambda: None, lambda: None,
                 filename_format="file+numbers", initial_part_length_m=5,
             )

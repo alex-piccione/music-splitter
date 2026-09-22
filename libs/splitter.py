@@ -1,3 +1,4 @@
+import logging
 import os
 import math
 import shutil
@@ -6,6 +7,9 @@ from pathlib import Path
 import yaml
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, ID3NoHeaderError, COMM, TRK
+
+# Shared logger name so warnings land in the same music_splitter.log file.
+logger = logging.getLogger("music_splitter")
 
 UI_TEXT_FILE = Path(__file__).resolve().parent.parent / "ui-text" / "english.yml"
 # Built-in fallback used when ui-text/english.yml is missing, unparseable or incomplete.
@@ -25,16 +29,16 @@ def load_provenance(path: Path = UI_TEXT_FILE) -> dict:
     try:
         raw = Path(path).read_text(encoding="utf-8")
     except OSError as e:
-        print(f"Warning: could not read {path} ({e}); using built-in provenance text.")
+        logger.warning(f"Could not read {path} ({e}); using built-in provenance text.")
         return dict(DEFAULT_PROVENANCE)
     try:
         data = yaml.safe_load(raw) or {}
     except yaml.YAMLError as e:
-        print(f"Warning: invalid YAML in {path}: {e}; using built-in provenance text.")
+        logger.warning(f"Invalid YAML in {path}: {e}; using built-in provenance text.")
         return dict(DEFAULT_PROVENANCE)
     comm = data.get("comm")
     if not isinstance(comm, dict) or not isinstance(comm.get("text"), str) or not comm["text"].strip():
-        print(f"Warning: missing or invalid 'comm' section in {path}; using built-in provenance text.")
+        logger.warning(f"Missing or invalid 'comm' section in {path}; using built-in provenance text.")
         return dict(DEFAULT_PROVENANCE)
     return {
         "lang": str(comm.get("language") or DEFAULT_PROVENANCE["lang"]),
@@ -173,7 +177,7 @@ class MP3Splitter:
                         ))
                     target_tags.save()
                 except Exception as e:
-                    print(f"Warning: Could not copy metadata to {filename}: {e}")
+                    logger.warning(f"Could not copy metadata to {filename}: {e}")
 
                 created_files.append(output_path)
 

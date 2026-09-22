@@ -70,5 +70,46 @@ class TestLastDirPersistence(unittest.TestCase):
         self.assertEqual(load_last_dir(), self.some_dir)
 
 
+class TestLogging(unittest.TestCase):
+    def setUp(self):
+        import main as m
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+        self.log_path = os.path.join(self.tmpdir.name, "test.log")
+        self.original_handlers = m.logger.handlers[:]
+        self.original_log_file = m.LOG_FILE
+        m.LOG_FILE = self.log_path
+
+    def tearDown(self):
+        main.logger.handlers = self.original_handlers
+        main.LOG_FILE = self.original_log_file
+
+    def _read_log(self):
+        with open(self.log_path, encoding="utf-8") as f:
+            return f.read()
+
+    def test_setup_logging_writes_timestamped_lines_to_file(self):
+        main.setup_logging()
+        main.logger.info("hello log")
+        content = self._read_log()
+        self.assertIn("INFO hello log", content)
+        self.assertRegex(content, r"^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\] INFO hello log$")
+
+    def test_error_level_is_recorded(self):
+        main.setup_logging()
+        main.logger.error("boom")
+        self.assertIn("ERROR boom", self._read_log())
+
+    def test_repeated_setup_does_not_duplicate_entries(self):
+        main.setup_logging()
+        main.setup_logging()
+        main.logger.info("once only")
+        self.assertEqual(self._read_log().count("once only"), 1)
+
+    def test_splitter_warnings_share_the_same_log_file(self):
+        from libs.splitter import logger as splitter_logger
+        self.assertIs(splitter_logger, main.logger)
+
+
 if __name__ == "__main__":
     unittest.main()
