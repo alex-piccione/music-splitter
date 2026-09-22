@@ -2,9 +2,10 @@ import unittest
 import os
 import shutil
 import tempfile
+import yaml
 from libs.splitter import MP3Splitter
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, TRK
+from mutagen.id3 import ID3, TRK, COMM
 
 class TestMP3Splitter(unittest.TestCase):
     @classmethod
@@ -134,6 +135,46 @@ class TestMP3Splitter(unittest.TestCase):
                     seg = MP3(part)
                     self.assertIn('TRCK', seg)
                     self.assertEqual(str(seg['TRCK'][0]), "7/18")
+            finally:
+                if os.path.exists(out_dir):
+                    shutil.rmtree(out_dir)
+
+    @classmethod
+    def _expected_comm(cls):
+        """Expected provenance COMM values, loaded from ui-text/english.yml."""
+        with open(os.path.join("ui-text", "english.yml"), encoding="utf-8") as f:
+            comm = yaml.safe_load(f)["comm"]
+        return {"lang": comm["language"], "description": comm["description"], "text": comm["text"]}
+
+    def test_provenance_comm_added_to_every_part(self):
+        """Each split part carries the provenance COMM frame from english.yml."""
+        expected = self._expected_comm()
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
+        for part in parts:
+            tags = MP3(part).tags
+            comms = [c for c in tags.getall("COMM")
+                     if c.lang == expected["lang"] and c.desc == expected["description"]]
+            self.assertEqual(len(comms), 1)
+            self.assertEqual(str(comms[0].text[0]), expected["text"])
+
+    def test_provenance_comm_not_duplicated_when_source_has_it(self):
+        """Source already carrying the same COMM: no duplicate is added."""
+        expected = self._expected_comm()
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "with_comm.mp3")
+            shutil.copyfile(self.fixture_path, src)
+            audio = MP3(src)
+            audio.tags.add(COMM(encoding=3, lang=expected["lang"],
+                                desc=expected["description"], text=[expected["text"]]))
+            audio.save()
+            out_dir = os.path.join(tmp, "out")
+            try:
+                parts = self.splitter.split(src, out_dir, 5/60)
+                for part in parts:
+                    tags = MP3(part).tags
+                    comms = [c for c in tags.getall("COMM")
+                             if c.lang == expected["lang"] and c.desc == expected["description"]]
+                    self.assertEqual(len(comms), 1)
             finally:
                 if os.path.exists(out_dir):
                     shutil.rmtree(out_dir)

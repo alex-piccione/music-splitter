@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Feature 10: every split part now carries a provenance COMM ID3v2 comment (language `eng`, description "Splitter provenance", text "Original file split with Music Splitter by Alessandro Piccione."); values stored in `ui-text/english.yml` under `comm:`; no duplicate added when the source already has the same comment. Added `PyYAML` dependency and fixed the invalid YAML block scalar (`|>` → `>-`) in `english.yml`.
+
 ## 2026-09-22
 - Feature 8: split parts now carry a track-number frame (`TRCK`, e.g. `2/5`) indicating their position among the generated parts; if the source file already has one, it is copied as-is and never overridden.
 - Reworked UI layout: fixed-height message bar on top, Browse row (button + selected file), then *File names* and *Part length* settings, and a big **SPLIT** button disabled until a source file is chosen.

@@ -2,8 +2,9 @@ import os
 import math
 import shutil
 import subprocess
+import yaml
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, ID3NoHeaderError, TRK
+from mutagen.id3 import ID3, ID3NoHeaderError, TRK, COMM
 
 
 class MP3Splitter:
@@ -12,8 +13,31 @@ class MP3Splitter:
     Uses FFmpeg stream-copy (-c copy): lossless and fast, no re-encoding.
     """
 
+    UI_TEXT_FILE = os.path.join(os.path.dirname(__file__), "..", "ui-text", "english.yml")
+
     def __init__(self):
         pass
+
+    @classmethod
+    def load_comm_settings(cls) -> dict | None:
+        """Read the provenance COMM frame values from ui-text/english.yml.
+
+        Returns {'lang', 'description', 'text'} or None if unavailable/invalid,
+        so splitting still works when the file is missing or unreadable.
+        """
+        try:
+            with open(cls.UI_TEXT_FILE, encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        except (OSError, yaml.YAMLError):
+            return None
+        comm = data.get("comm")
+        if not isinstance(comm, dict) or not comm.get("text"):
+            return None
+        return {
+            "lang": str(comm.get("language", "eng")),
+            "description": str(comm.get("description", "")),
+            "text": str(comm["text"]),
+        }
 
     @staticmethod
     def default_output_folder(input_path: str) -> str:
@@ -86,6 +110,8 @@ class MP3Splitter:
             except ID3NoHeaderError:
                 pass  # No tags present
 
+            comm_cfg = self.load_comm_settings()
+
             created_files = []
             for i in range(num_segments):
                 start_s = i * segment_s
@@ -116,6 +142,13 @@ class MP3Splitter:
                     if original_tags:
                         for key, value in original_tags.items():
                             target_tags.add(value)
+                    # Add the provenance comment unless an identical one was already copied from the source.
+                    if comm_cfg and not any(
+                        c.lang == comm_cfg["lang"] and c.desc == comm_cfg["description"]
+                        for c in target_tags.getall("COMM")
+                    ):
+                        target_tags.add(COMM(encoding=3, lang=comm_cfg["lang"],
+                                             desc=comm_cfg["description"], text=[comm_cfg["text"]]))
                     # Label each part with its position unless the source already had a track number.
                     # Note: the frame class is named TRK but its ID3v2 code (and dict key) is 'TRCK'
                     if 'TRCK' not in target_tags:
