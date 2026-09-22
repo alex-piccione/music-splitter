@@ -4,7 +4,7 @@ import shutil
 import tempfile
 from libs.splitter import MP3Splitter
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, TRK
+from mutagen.id3 import ID3, TRK, COMM
 
 class TestMP3Splitter(unittest.TestCase):
     @classmethod
@@ -137,6 +137,42 @@ class TestMP3Splitter(unittest.TestCase):
             finally:
                 if os.path.exists(out_dir):
                     shutil.rmtree(out_dir)
+
+    def _provenance_frames(self, path):
+        return [
+            f for f in ID3(path).getall("COMM")
+            if f.desc == "Splitter provenance" and f.lang == "eng"
+        ]
+
+    def test_comm_provenance_added_to_each_part(self):
+        """Each part gets the provenance COMM frame defined in ui-text/english.yml."""
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
+        for part in parts:
+            frames = self._provenance_frames(part)
+            self.assertEqual(len(frames), 1)
+            self.assertEqual(
+                frames[0].text[0],
+                "Original file split with Music Splitter by Alessandro Piccione.",
+            )
+
+    def test_comm_not_duplicated_when_source_has_it(self):
+        """A source already carrying the provenance COMM keeps exactly one copy."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "with_comm.mp3")
+            shutil.copyfile(self.fixture_path, src)
+            audio = MP3(src)
+            audio.tags.add(COMM(encoding=3, lang="eng", desc="Splitter provenance",
+                                text="Original file split with Music Splitter by Alessandro Piccione."))
+            audio.save()
+            out_dir = os.path.join(tmp, "out")
+            try:
+                parts = self.splitter.split(src, out_dir, 5/60)
+                for part in parts:
+                    self.assertEqual(len(self._provenance_frames(part)), 1)
+            finally:
+                if os.path.exists(out_dir):
+                    shutil.rmtree(out_dir)
+
 
 if __name__ == '__main__':
     unittest.main()

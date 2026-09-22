@@ -2,8 +2,9 @@ import os
 import math
 import shutil
 import subprocess
+import yaml
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, ID3NoHeaderError, TRK
+from mutagen.id3 import ID3, ID3NoHeaderError, TRK, COMM
 
 
 class MP3Splitter:
@@ -33,6 +34,33 @@ class MP3Splitter:
 
     NAMING_NUMBERS = "numbers"
     NAMING_FILE_PLUS_NUMBERS = "file+numbers"
+
+    UI_TEXT_PATH = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "ui-text", "english.yml"
+    )
+
+    @classmethod
+    def _load_comm_frame(cls) -> COMM:
+        """Build the provenance COMM tag from ui-text/english.yml."""
+        try:
+            with open(cls.UI_TEXT_PATH, "r") as f:
+                data = yaml.safe_load(f)
+            comm = data["comm"]
+            return COMM(
+                encoding=3,
+                desc=comm["description"],
+                lang=comm["language"],
+                text=comm["text"],
+            )
+        except (OSError, KeyError, TypeError, yaml.YAMLError) as e:
+            raise ValueError(f"Could not load COMM tag from {cls.UI_TEXT_PATH}: {e}")
+
+    @staticmethod
+    def _has_same_comm(tags: ID3, frame: COMM) -> bool:
+        for existing in tags.getall("COMM"):
+            if existing.desc == frame.desc and existing.lang == frame.lang:
+                return True
+        return False
 
     def split(self, input_path: str, output_folder: str, segment_minutes: float,
               naming: str = NAMING_NUMBERS) -> list[str]:
@@ -86,6 +114,8 @@ class MP3Splitter:
             except ID3NoHeaderError:
                 pass  # No tags present
 
+            comm = self._load_comm_frame()
+
             created_files = []
             for i in range(num_segments):
                 start_s = i * segment_s
@@ -120,6 +150,9 @@ class MP3Splitter:
                     # Note: the frame class is named TRK but its ID3v2 code (and dict key) is 'TRCK'
                     if 'TRCK' not in target_tags:
                         target_tags.add(TRK(encoding=3, text=f"{i+1}/{num_segments}"))
+                    # Add splitter provenance once per file (source may carry other COMM frames).
+                    if not self._has_same_comm(target_tags, comm):
+                        target_tags.add(comm)
                     target_tags.save()
                 except Exception as e:
                     print(f"Warning: Could not copy metadata to {filename}: {e}")
