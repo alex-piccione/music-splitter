@@ -40,7 +40,9 @@ Every generated segment additionally receives a provenance COMM frame marking it
 | Description | `Splitter provenance`                                        |
 | Text        | *Original file split with Music Splitter by Alessandro Piccione.* |
 
-The text lives in [`ui-text/english.yml`](./ui-text/english.yml) under the key `comm provenance text`; if the file cannot be read, a built-in default identical to it is used. If the source already carries a COMM frame with the same language and description, no duplicate is added.
+All three values are configured in [`ui-text/english.yml`](./ui-text/english.yml) under the `comm:` section (`language`, `description`, `text`). If that file is missing, unparseable, or lacks a valid `comm` section, a built-in default identical to it is used and a warning is printed.
+
+Duplicate detection uses the frame's **identity** — the language + description pair — not the text content. If the source already carries a COMM frame with the same language and description, it is copied as-is (even if its text differs) and no second frame is added.
 
 ## Copy behaviour
 

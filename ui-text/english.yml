@@ -4,4 +4,7 @@ main description: >
   The division is guided by a tracklist file, that has to have the same name of the .mp3 file and belong in the same folder.
   The tracklist file has to have the following format:
 
-comm provenance text: Original file split with Music Splitter by Alessandro Piccione.
+comm:
+  language: eng
+  description: Splitter provenance
+  text: Original file split with Music Splitter by Alessandro Piccione.
