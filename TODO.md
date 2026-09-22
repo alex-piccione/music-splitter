@@ -2,8 +2,9 @@
 
 ## Backlog
 
-- Feature 8: add TEST.md file in the root.
-  Write in it that has to be deleted after feature 7 is completed.
+- Feature 10: add TEST.md file in the root. Empty.
+  This file is just to test teh /feature command.
+  Don't overthink... is a simple 1 minute task (don't forget branch + PR).
 
 - Feature 7: The internal log will be replaced by a log file, plus a button that shows it when an operation fails.
 
