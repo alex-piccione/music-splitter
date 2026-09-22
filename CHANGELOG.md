@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-22
+- Feature 10: every split part is stamped with a provenance `COMM` frame (`eng` / "Splitter provenance" / "Original file split with Music Splitter by Alessandro Piccione."); the values live in `ui-text/english.yml`, with a built-in fallback if the file is missing; a source COMM frame with the same language+description is kept as-is, never duplicated.
 - Feature 8: split parts now carry a track-number frame (`TRCK`, e.g. `2/5`) indicating their position among the generated parts; if the source file already has one, it is copied as-is and never overridden.
 - Reworked UI layout: fixed-height message bar on top, Browse row (button + selected file), then *File names* and *Part length* settings, and a big **SPLIT** button disabled until a source file is chosen.
 - Removed the "Selected File" frame, the Status Log widget, the Close button and all alert popups; status and errors are shown in the top message bar (errors in red).

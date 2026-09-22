@@ -2,9 +2,10 @@ import unittest
 import os
 import shutil
 import tempfile
-from libs.splitter import MP3Splitter
+from pathlib import Path
+from libs.splitter import MP3Splitter, load_provenance
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, TRK
+from mutagen.id3 import ID3, COMM, TRK
 
 class TestMP3Splitter(unittest.TestCase):
     @classmethod
@@ -118,6 +119,48 @@ class TestMP3Splitter(unittest.TestCase):
             audio = MP3(part)
             self.assertIn('TRCK', audio)
             self.assertEqual(str(audio['TRCK'][0]), f"{i}/3")
+
+    def test_comm_added_to_every_part(self):
+        """Each part gets the provenance COMM frame from ui-text/english.yml."""
+        parts = self.splitter.split(self.fixture_path, self.output_dir, 5/60)
+        expected = load_provenance()
+        self.assertEqual(expected["text"],
+                         "Original file split with Music Splitter by Alessandro Piccione.")
+        for part in parts:
+            seg = MP3(part)
+            frames = [f for f in seg.tags.getall('COMM')
+                      if f.lang == expected["lang"] and f.desc == expected["description"]]
+            self.assertEqual(len(frames), 1)
+            self.assertEqual(str(frames[0].text[0]), expected["text"])
+
+    def test_comm_not_duplicated_when_source_has_same_identity(self):
+        """A source COMM with the same language+description is kept as-is, not duplicated."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "with_comm.mp3")
+            shutil.copyfile(self.fixture_path, src)
+            audio = MP3(src)
+            audio.tags.add(COMM(encoding=3, lang="eng", desc="Splitter provenance",
+                                text=["existing comment"]))
+            audio.save()
+            out_dir = os.path.join(tmp, "out")
+            try:
+                parts = self.splitter.split(src, out_dir, 5/60)
+                for part in parts:
+                    seg = MP3(part)
+                    frames = [f for f in seg.tags.getall('COMM')
+                              if f.lang == "eng" and f.desc == "Splitter provenance"]
+                    self.assertEqual(len(frames), 1)
+                    self.assertEqual(str(frames[0].text[0]), "existing comment")
+            finally:
+                if os.path.exists(out_dir):
+                    shutil.rmtree(out_dir)
+
+    def test_load_provenance_fallback_on_missing_file(self):
+        """Missing english.yml falls back to the built-in provenance values."""
+        prov = load_provenance(Path("nonexistent/english.yml"))
+        self.assertEqual(prov["lang"], "eng")
+        self.assertEqual(prov["description"], "Splitter provenance")
+        self.assertTrue(prov["text"].startswith("Original file split with Music Splitter"))
 
     def test_trk_preserved_when_source_has_one(self):
         """Source with TRK: it is copied verbatim, never overridden."""
