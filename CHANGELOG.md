@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-22
+- Fixed `test_default_output_folder`: paths are now built with `os.path.join`/`abspath` instead of hardcoded POSIX strings, so the test passes on Windows too.
 - Feature 11: split parts are now named `part_01.mp3` / `<source_stem>_part_01.mp3` instead of `01.mp3` / `<source_stem>_01.mp3`; radio button examples updated accordingly.
 - Feature 10: every split part now carries a provenance COMM tag (`eng`, description "Splitter provenance"). The full frame (language, description, text) is configurable via the `comm:` section of `ui-text/english.yml`; a built-in fallback with a warning covers missing/broken configuration. Duplicate detection keys on the frame identity (language + description): a matching frame from the source is preserved verbatim, even with different text.
 - Fixed invalid YAML header in `ui-text/english.yml` (`|>` → `>`).

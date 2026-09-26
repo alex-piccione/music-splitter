@@ -67,10 +67,16 @@ class TestMP3Splitter(unittest.TestCase):
             self.splitter.split("non_existent.mp3", self.output_dir, 1.0)
 
     def test_default_output_folder(self):
-        """The default output folder is named after the source file (no extension)."""
+        """The default output folder is named after the source file (no extension).
+
+        Paths are built with os.path.join so the assertion holds on any OS
+        (abspath() resolves relative input against the CWD and applies the
+        native separator/drive letter).
+        """
+        src = os.path.join("music", "DJ Session.mp3")
         self.assertEqual(
-            MP3Splitter.default_output_folder("/music/DJ Session.mp3"),
-            "/music/DJ Session",
+            MP3Splitter.default_output_folder(src),
+            os.path.abspath(os.path.join("music", "DJ Session")),
         )
 
     def test_split_into_source_named_folder(self):

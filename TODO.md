@@ -2,15 +2,6 @@
 
 ## Backlog
 
-- Bug 1: test "test_default_output_folder" doesn't take in account difefrent OS path separator
-  ```
-  AssertionError: 'P:\\music\\DJ Session' != '/music/DJ Session'
-    - P:\music\DJ Session
-    ? ^^^     ^
-    + /music/DJ Session
-    ? ^     ^
-  ```
-
 - Feature 10: add TEST.md file in the root. Empty.
   This file is just to test teh /feature command.
   Don't overthink... is a simple 1 minute task (don't forget branch + PR).
